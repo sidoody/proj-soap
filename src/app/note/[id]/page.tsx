@@ -17,8 +17,8 @@ function ReviewDisplay({ review }: { review: any }) {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-600 bg-green-50";
-    if (score >= 60) return "text-yellow-600 bg-yellow-50";
+    if (score >= 16) return "text-green-600 bg-green-50";
+    if (score >= 12) return "text-yellow-600 bg-yellow-50";
     return "text-red-600 bg-red-50";
   };
 
@@ -33,7 +33,7 @@ function ReviewDisplay({ review }: { review: any }) {
       {/* Overall Score */}
       <div className={`p-4 rounded-lg border ${getScoreColor(review.overall_score)}`}>
         <h3 className="font-semibold text-lg">Overall Score</h3>
-        <div className="text-3xl font-bold">{review.overall_score}/100</div>
+        <div className="text-3xl font-bold">{review.overall_score}/20</div>
       </div>
 
       {/* Section Feedback */}
