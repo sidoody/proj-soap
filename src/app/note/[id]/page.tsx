@@ -34,40 +34,73 @@ function ReviewDisplay({ review }: { review: any }) {
   };
 
   const getImpactColor = (impact: string) => {
-    if (impact === "improved") return "text-green-600";
-    if (impact === "worsened") return "text-red-600";
-    return "text-gray-600";
+    if (impact === "improved") return "text-green-600 bg-green-100";
+    if (impact === "worsened") return "text-red-600 bg-red-100";
+    return "text-gray-600 bg-gray-100";
   };
+
+  // Group changes by dimension
+  const changesByDimension = (review.changes || []).reduce((acc: any, change: any) => {
+    if (!acc[change.dimension]) acc[change.dimension] = [];
+    acc[change.dimension].push(change);
+    return acc;
+  }, {});
 
   return (
     <div className="mt-6 space-y-4">
-      {/* Overall Delta Score */}
-      <div className={`p-4 rounded-lg border ${getOverallDeltaColor(review.overall_delta || 0)}`}>
-        <h3 className="font-semibold text-lg">Overall Delta Score</h3>
-        <div className="text-3xl font-bold">
-          {review.overall_delta > 0 ? '+' : ''}{review.overall_delta || 0}/45
-        </div>
-        <p className="text-sm mt-1">Range: -45 (much worse) to +45 (much better)</p>
-      </div>
-
-      {/* PDQI-9 Dimension Feedback */}
-      <div className="space-y-3">
-        <h3 className="font-semibold text-lg">PDQI-9 Dimension Feedback</h3>
-        {Object.entries(review.dimension_feedback || {}).map(([dimension, feedback]: [string, any]) => (
-          <div key={dimension} className={`border rounded-lg p-4 ${getDeltaColor(feedback.delta || 0)}`}>
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="font-medium">
-                {dimensionNames[dimension as keyof typeof dimensionNames]}
-              </h4>
-              <span className="font-semibold text-lg">
-                {feedback.delta > 0 ? '+' : ''}{feedback.delta || 0}
-              </span>
+      {/* PDQI-9 Detailed Scoring */}
+      <div className="space-y-4">
+        <h3 className="font-semibold text-lg">PDQI-9 Detailed Scoring</h3>
+        
+        {/* Score Summary Table */}
+        <div className="border rounded-lg overflow-hidden">
+          <div className="bg-gray-50 p-3 border-b">
+            <div className="grid grid-cols-4 gap-2 text-sm font-medium text-gray-700">
+              <div>Dimension</div>
+              <div className="text-center">Baseline</div>
+              <div className="text-center">Student</div>
+              <div className="text-center">Delta</div>
             </div>
+          </div>
+          {Object.entries(dimensionNames).map(([key, name]) => {
+            const baselineScore = review.baseline_scores?.[key] || 0;
+            const studentScore = review.student_scores?.[key] || 0;
+            const deltaScore = review.delta_scores?.[key] || 0;
             
-            {/* Changes for this dimension */}
-            {feedback.changes && feedback.changes.length > 0 && (
+            return (
+              <div key={key} className="p-3 border-b border-gray-100 last:border-b-0">
+                <div className="grid grid-cols-4 gap-2 text-sm">
+                  <div className="font-medium">{name}</div>
+                  <div className="text-center text-gray-600">{baselineScore}/5</div>
+                  <div className="text-center text-gray-600">{studentScore}/5</div>
+                  <div className={`text-center font-semibold ${getDeltaColor(deltaScore)}`}>
+                    {deltaScore > 0 ? '+' : ''}{deltaScore}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Individual Dimension Details */}
+        {Object.entries(dimensionNames).map(([key, name]) => {
+          const deltaScore = review.delta_scores?.[key] || 0;
+          const dimensionChanges = changesByDimension[key] || [];
+          
+          if (dimensionChanges.length === 0) return null;
+          
+          return (
+            <div key={key} className={`border rounded-lg p-4 ${getDeltaColor(deltaScore)}`}>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium">{name}</h4>
+                <span className="font-semibold text-lg">
+                  {deltaScore > 0 ? '+' : ''}{deltaScore}
+                </span>
+              </div>
+              
+              {/* Changes for this dimension */}
               <div className="space-y-2">
-                {feedback.changes.map((change: any, index: number) => (
+                {dimensionChanges.map((change: any, index: number) => (
                   <div key={index} className="bg-white bg-opacity-50 rounded p-3 border-l-4 border-gray-300">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`font-medium text-sm px-2 py-1 rounded ${getImpactColor(change.impact)}`}>
@@ -81,9 +114,9 @@ function ReviewDisplay({ review }: { review: any }) {
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
 
       {/* Global Comment */}

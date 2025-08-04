@@ -5,37 +5,37 @@ import { db } from "@/lib/store";
 const reviewPrompt = `
 You are an attending physician using the **PDQI-9** rubric.
 
-• NOTE_A = baseline AI-generated SOAP (reference; do NOT grade it)  
-• NOTE_B = student-edited version (grade ONLY the edits)
+Notes:
+• NOTE_A = baseline AI-generated SOAP (reference)  
+• NOTE_B = student-edited version
 
-PDQI-9 dimensions:
-  1. up-to-date 2. accurate 3. thorough 4. useful 5. organized
-  6. comprehensible 7. succinct 8. synthesized 9. consistent
+Step 1 – Score BOTH notes  
+  • For each PDQI dimension (up-to-date, accurate, thorough, useful, organized, comprehensible, succinct, synthesized, consistent)  
+    – Give a Likert 1-5 score to NOTE_A.  
+    – Give a Likert 1-5 score to NOTE_B.
 
-For EACH detected edit:
-  • Decide which single PDQI dimension it impacts most.  
-  • Label "impact": improved | worsened | neutral.  
-  • Give a ≤25-word coaching "comment".  
-  • Provide a ≤20-word "snippet" of the changed text.
+Step 2 – Delta  
+  • delta = score_B − score_A (range −4→+4).  
+  • overall_delta = sum of deltas (range −36→+36).
 
-After listing edits, compute **delta scores** per dimension
-(−5 worse … +5 better) then sum → overall_delta (range −45→+45).
+Step 3 – Edit analysis  
+  • Detect each textual change.  
+  • For each change:  
+      – \`dimension\` it impacts most  
+      – \`impact\` improved | worsened | neutral  
+      – \`snippet\` ≤20 words  
+      – \`comment\` coaching ≤25 words
 
-Return STRICT JSON **matching exactly**:
+Return STRICT JSON only:
 
 {
+  "baseline_scores":    { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "student_scores":     { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "delta_scores":       { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
   "overall_delta": int,
-  "dimension_feedback": {
-    "up_to_date":     { "delta": int, "changes": [ { "impact": str, "snippet": str, "comment": str } ] },
-    "accurate":       { "delta": int, "changes": [ ... ] },
-    "thorough":       { ... },
-    "useful":         { ... },
-    "organized":      { ... },
-    "comprehensible": { ... },
-    "succinct":       { ... },
-    "synthesized":    { ... },
-    "consistent":     { ... }
-  },
+  "changes": [
+     { "dimension":str, "impact":str, "snippet":str, "comment":str }
+  ],
   "global_comment": str
 }`;
 
@@ -52,8 +52,8 @@ export async function POST(req: Request) {
     {
       role: "user" as const,
       content:
-        `NOTE_A (baseline):\n"""\n${enc.aiNote}\n"""\n\n` +
-        `NOTE_B (student edited):\n"""\n${studentNote}\n"""`
+        `NOTE_A:\n"""\n${enc.aiNote}\n"""\n\n` +
+        `NOTE_B:\n"""\n${studentNote}\n"""`
     },
   ];
 
