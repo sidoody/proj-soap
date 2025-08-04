@@ -1,10 +1,10 @@
 "use client";
-import ReactMarkdown from "react-markdown";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SOAPNote } from "@/components/ui/soap-note";
 import { toast } from "sonner";
 
 // Review component for displaying feedback
@@ -178,7 +178,7 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="overflow-auto">
             <h2 className="mb-2 text-lg font-semibold">AI SOAP (read-only)</h2>
-            <ReactMarkdown className="prose max-w-none">{aiNote}</ReactMarkdown>
+            <SOAPNote content={aiNote} />
           </Card>
 
           <Card>

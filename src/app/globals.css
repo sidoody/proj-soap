@@ -24,3 +24,40 @@ body {
   font-family: var(--font-manrope), system-ui, sans-serif;
   min-height: 100vh;
 }
+
+/* Enhanced SOAP Note Formatting */
+.soap-note {
+  line-height: 1.7;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+.soap-note h2 {
+  letter-spacing: -0.025em;
+}
+
+.soap-note p {
+  text-align: justify;
+  hyphens: auto;
+}
+
+.soap-note ul {
+  list-style: none;
+}
+
+.soap-note strong {
+  font-weight: 600;
+}
+
+/* Improved readability for medical content */
+.soap-note code {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Better spacing for nested content */
+.soap-note li p {
+  margin-bottom: 0.5rem;
+}
+
+.soap-note li:last-child {
+  margin-bottom: 0;
+}
