@@ -9,49 +9,118 @@ import { toast } from "sonner";
 
 // Review component for displaying feedback
 function ReviewDisplay({ review }: { review: any }) {
-  const sectionNames = {
-    S: "Subjective",
-    O: "Objective", 
-    A: "Assessment",
-    P: "Plan"
+  const dimensionNames = {
+    up_to_date: "Up-to-Date",
+    accurate: "Accurate", 
+    thorough: "Thorough",
+    useful: "Useful",
+    organized: "Organized",
+    comprehensible: "Comprehensible",
+    succinct: "Succinct",
+    synthesized: "Synthesized",
+    consistent: "Consistent"
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 16) return "text-green-600 bg-green-50";
-    if (score >= 12) return "text-yellow-600 bg-yellow-50";
+
+  const getDeltaColor = (delta: number) => {
+    if (delta >= 2) return "text-green-600 bg-green-50";
+    if (delta >= 0) return "text-yellow-600 bg-yellow-50";
+
     return "text-red-600 bg-red-50";
   };
 
-  const getSectionScoreColor = (score: number) => {
-    if (score >= 4) return "text-green-600";
-    if (score >= 3) return "text-yellow-600";
-    return "text-red-600";
+  const getOverallDeltaColor = (delta: number) => {
+    if (delta >= 10) return "text-green-600 bg-green-50";
+    if (delta >= 0) return "text-yellow-600 bg-yellow-50";
+    return "text-red-600 bg-red-50";
   };
+
+  const getImpactColor = (impact: string) => {
+    if (impact === "improved") return "text-green-600 bg-green-100";
+    if (impact === "worsened") return "text-red-600 bg-red-100";
+    return "text-gray-600 bg-gray-100";
+  };
+
+  // Group changes by dimension
+  const changesByDimension = (review.changes || []).reduce((acc: any, change: any) => {
+    if (!acc[change.dimension]) acc[change.dimension] = [];
+    acc[change.dimension].push(change);
+    return acc;
+  }, {});
 
   return (
     <div className="mt-6 space-y-4">
-      {/* Overall Score */}
-      <div className={`p-4 rounded-lg border ${getScoreColor(review.overall_score)}`}>
-        <h3 className="font-semibold text-lg">Overall Score</h3>
-        <div className="text-3xl font-bold">{review.overall_score}/20</div>
-      </div>
 
-      {/* Section Feedback */}
-      <div className="space-y-3">
-        <h3 className="font-semibold text-lg">Section Feedback</h3>
-        {Object.entries(review.section_feedback || {}).map(([section, feedback]: [string, any]) => (
-          <div key={section} className="border rounded-lg p-4 bg-gray-50">
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="font-medium">
-                {section} - {sectionNames[section as keyof typeof sectionNames]}
-              </h4>
-              <span className={`font-semibold ${getSectionScoreColor(feedback.score)}`}>
-                {feedback.score}/5
-              </span>
+      {/* PDQI-9 Detailed Scoring */}
+      <div className="space-y-4">
+        <h3 className="font-semibold text-lg">PDQI-9 Detailed Scoring</h3>
+        
+        {/* Score Summary Table */}
+        <div className="border rounded-lg overflow-hidden">
+          <div className="bg-gray-50 p-3 border-b">
+            <div className="grid grid-cols-4 gap-2 text-sm font-medium text-gray-700">
+              <div>Dimension</div>
+              <div className="text-center">Baseline</div>
+              <div className="text-center">Student</div>
+              <div className="text-center">Delta</div>
+
             </div>
-            <p className="text-gray-700 text-sm">{feedback.comment}</p>
           </div>
-        ))}
+          {Object.entries(dimensionNames).map(([key, name]) => {
+            const baselineScore = review.baseline_scores?.[key] || 0;
+            const studentScore = review.student_scores?.[key] || 0;
+            const deltaScore = review.delta_scores?.[key] || 0;
+            
+            return (
+              <div key={key} className="p-3 border-b border-gray-100 last:border-b-0">
+                <div className="grid grid-cols-4 gap-2 text-sm">
+                  <div className="font-medium">{name}</div>
+                  <div className="text-center text-gray-600">{baselineScore}/5</div>
+                  <div className="text-center text-gray-600">{studentScore}/5</div>
+                  <div className={`text-center font-semibold ${getDeltaColor(deltaScore)}`}>
+                    {deltaScore > 0 ? '+' : ''}{deltaScore}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Individual Dimension Details */}
+        {Object.entries(dimensionNames).map(([key, name]) => {
+          const deltaScore = review.delta_scores?.[key] || 0;
+          const dimensionChanges = changesByDimension[key] || [];
+          
+          if (dimensionChanges.length === 0) return null;
+          
+          return (
+            <div key={key} className={`border rounded-lg p-4 ${getDeltaColor(deltaScore)}`}>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium">{name}</h4>
+                <span className="font-semibold text-lg">
+                  {deltaScore > 0 ? '+' : ''}{deltaScore}
+                </span>
+              </div>
+              
+              {/* Changes for this dimension */}
+              <div className="space-y-2">
+                {dimensionChanges.map((change: any, index: number) => (
+                  <div key={index} className="bg-white bg-opacity-50 rounded p-3 border-l-4 border-gray-300">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`font-medium text-sm px-2 py-1 rounded ${getImpactColor(change.impact)}`}>
+                        {change.impact}
+                      </span>
+                      <span className="text-xs text-gray-600 font-mono bg-gray-100 px-2 py-1 rounded">
+                        "{change.snippet}"
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-700">{change.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Global Comment */}
