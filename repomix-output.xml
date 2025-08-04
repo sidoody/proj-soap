@@ -1,0 +1,784 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+4. Repository files, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+<additional_info>
+
+</additional_info>
+
+</file_summary>
+
+<directory_structure>
+public/
+  file.svg
+  globe.svg
+  next.svg
+  vercel.svg
+  window.svg
+src/
+  app/
+    api/
+      debug/
+        route.ts
+      generate/
+        route.ts
+      review/
+        route.ts
+    note/
+      [id]/
+        page.tsx
+    globals.css
+    layout.tsx
+    page.tsx
+  components/
+    ui/
+      button.tsx
+      card.tsx
+      skeleton.tsx
+      textarea.tsx
+  lib/
+    openai.ts
+    parseCsv.ts
+    prompts.ts
+    store.ts
+    utils.ts
+.gitignore
+eslint.config.mjs
+next.config.ts
+package.json
+postcss.config.mjs
+README.md
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/app/api/debug/route.ts">
+import { NextResponse } from "next/server";
+import { db } from "@/lib/store";
+
+export function GET(req: Request) {
+  const id = new URL(req.url).searchParams.get("id")!;
+  const data = db.get(id);
+  return data
+    ? NextResponse.json(data)
+    : NextResponse.json({ error: "not found" }, { status: 404 });
+}
+</file>
+
+<file path="src/app/api/generate/route.ts">
+import { NextResponse } from "next/server";
+import { csvToChat } from "@/lib/parseCsv";
+import { systemSOAP } from "@/lib/prompts";
+import { openai } from "@/lib/openai";
+import { newEncounter, db } from "@/lib/store";
+
+export async function POST(req: Request) {
+  const { csv } = await req.json();
+  const enc = newEncounter(csv);
+
+  const messages = [
+    { role: "system" as const, content: systemSOAP },
+    ...csvToChat(csv),
+  ];
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages,
+    temperature: 0.3,
+  });
+
+  const note = completion.choices[0].message.content ?? "";
+  db.get(enc.id)!.aiNote = note;
+
+  return NextResponse.json({ id: enc.id, aiNote: note });
+}
+</file>
+
+<file path="src/app/api/review/route.ts">
+import { NextResponse } from "next/server";
+import { openai } from "@/lib/openai";
+import { db } from "@/lib/store";
+
+const reviewPrompt = `
+You are an attending. Compare NOTE_A (AI) with NOTE_B (student).
+For each section S/O/A/P:
+• Accuracy 0-5
+• Completeness 0-5
+• Clarity 0-5
+
+Return valid JSON:
+{
+  "overall_score": 0-100,
+  "section_feedback": {
+    "S": { "score": int, "comment": str },
+    "O": { ... },
+    "A": { ... },
+    "P": { ... }
+  },
+  "global_comment": str
+}`;
+
+export async function POST(req: Request) {
+  const { id, studentNote } = await req.json();
+  const enc = db.get(id);
+  if (!enc?.aiNote) {
+    return NextResponse.json({ error: "Encounter not found" }, { status: 404 });
+  }
+  enc.studentNote = studentNote;
+
+  const messages = [
+    { role: "system" as const, content: reviewPrompt },
+    { role: "user" as const, content: `NOTE_A: ${enc.aiNote}` },
+    { role: "user" as const, content: `NOTE_B: ${studentNote}` },
+  ];
+
+  const res = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages,
+    temperature: 0,
+    response_format: { type: "json_object" },
+  });
+
+  const rubric = JSON.parse(res.choices[0].message.content ?? "{}");
+  enc.reviewJson = rubric;
+  return NextResponse.json(rubric);
+}
+</file>
+
+<file path="src/app/note/[id]/page.tsx">
+"use client";
+import ReactMarkdown from "react-markdown";
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+
+export default function NotePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
+  const [aiNote, setAiNote] = useState<string | null>(null);
+  const [student, setStudent] = useState("");
+  const [review, setReview] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+
+  // fetch encounter once
+  useEffect(() => {
+    fetch(`/api/debug?id=${id}`)
+      .then((r) => r.ok ? r.json() : Promise.reject("Not found"))
+      .then((d) => {
+        setAiNote(d.aiNote);
+        setStudent(d.studentNote ?? d.aiNote);
+        setReview(d.reviewJson ?? null);
+      })
+      .catch(() => toast.error("Encounter not found"));
+  }, [id]);
+
+  async function handleSubmit() {
+    try {
+      setSaving(true);
+      const r = await fetch("/api/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, studentNote: student }),
+      });
+      if (!r.ok) throw new Error("Review failed");
+      setReview(await r.json());
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <main className="container mx-auto max-w-6xl space-y-8 py-8">
+      {!aiNote ? (
+        <Skeleton className="h-64 w-full" />
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card className="overflow-auto">
+            <h2 className="mb-2 text-lg font-semibold">AI SOAP (read-only)</h2>
+            <ReactMarkdown className="prose max-w-none">{aiNote}</ReactMarkdown>
+          </Card>
+
+          <Card>
+            <h2 className="mb-2 text-lg font-semibold">Your SOAP (edit)</h2>
+            <Textarea
+              rows={18}
+              value={student}
+              onChange={(e) => setStudent(e.target.value)}
+            />
+            <Button loading={saving} className="mt-4" onClick={handleSubmit}>
+              Submit for Review
+            </Button>
+
+            {review && (
+              <pre className="mt-6 whitespace-pre-wrap text-sm">
+                {JSON.stringify(review, null, 2)}
+              </pre>
+            )}
+          </Card>
+        </div>
+      )}
+    </main>
+  );
+}
+</file>
+
+<file path="src/components/ui/button.tsx">
+import { forwardRef, ButtonHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "default" | "secondary";
+  loading?: boolean;
+}
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = "default", loading, children, ...props }, ref) => (
+    <button
+      ref={ref}
+      className={cn(
+        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50",
+        variant === "default" &&
+          "bg-black text-white hover:bg-gray-900 focus-visible:ring-gray-400",
+        variant === "secondary" &&
+          "bg-gray-100 hover:bg-gray-200 focus-visible:ring-gray-300",
+        className
+      )}
+      disabled={loading || props.disabled}
+      {...props}
+    >
+      {loading && <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />}
+      {children}
+    </button>
+  )
+);
+Button.displayName = "Button";
+</file>
+
+<file path="src/components/ui/card.tsx">
+import { cn } from "@/lib/utils";
+
+export function Card({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-xl border bg-white shadow-sm dark:bg-zinc-900 p-6",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/ui/skeleton.tsx">
+export function Skeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={`animate-pulse rounded-md bg-gray-200 dark:bg-zinc-800 ${className}`}
+    />
+  );
+}
+</file>
+
+<file path="src/components/ui/textarea.tsx">
+import { forwardRef, TextareaHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+export const Textarea = forwardRef<
+  HTMLTextAreaElement,
+  TextareaHTMLAttributes<HTMLTextAreaElement>
+>(({ className, ...props }, ref) => (
+  <textarea
+    ref={ref}
+    className={cn(
+      "w-full rounded-md border border-gray-300 bg-transparent p-3 text-sm shadow-sm focus-visible:ring-2 focus-visible:ring-gray-400",
+      className
+    )}
+    {...props}
+  />
+));
+Textarea.displayName = "Textarea";
+</file>
+
+<file path="src/lib/openai.ts">
+import OpenAI from "openai";
+
+export const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+</file>
+
+<file path="src/lib/parseCsv.ts">
+import Papa from "papaparse";
+import type { ChatCompletionMessageParam } from "openai/resources";
+
+export function csvToChat(csv: string): ChatCompletionMessageParam[] {
+  const { data } = Papa.parse<string[]>(csv.trim(), { header: false });
+  return (data as string[][])
+    .map(r => r[0])
+    .filter(Boolean)
+    .map(line => {
+      const [, speaker, content] =
+        line.match(/\]\s*(User|Assistant):\s*(.*)$/i) ?? [];
+      const role = speaker?.toLowerCase() === "assistant" ? "assistant" : "user";
+      return {
+        role: role as "user" | "assistant",
+        content: content ?? line,
+      } as ChatCompletionMessageParam;
+    });
+}
+</file>
+
+<file path="src/lib/prompts.ts">
+export const systemSOAP = `
+You are a careful medical scribe.
+Write a concise **SOAP note** in markdown.
+
+**S – Subjective**
+• bulleted HPI & ROS
+
+**O – Objective**
+• vitals, focused exam, labs / EKG lines seen
+
+**A – Assessment**
+• 1–2-sentence summary + top differential
+
+**P – Plan**
+• bullets of diagnostics, therapeutics, disposition
+
+Rules:
+• 3rd-person ("Mr. Jones states …")
+• If data missing, write "—" and DO NOT fabricate
+• ≤6 bullets per list
+`;
+</file>
+
+<file path="src/lib/store.ts">
+import { v4 as uuid } from "uuid";
+
+export interface Encounter {
+  id: string;
+  csv: string;
+  aiNote?: string;
+  studentNote?: string;
+  reviewJson?: any;
+  createdAt: Date;
+}
+
+// Use a single Map instance attached to globalThis
+const globalStore =
+  (globalThis as any).__encounterStore as Map<string, Encounter> | undefined;
+
+export const db: Map<string, Encounter> =
+  globalStore ?? ((globalThis as any).__encounterStore = new Map());
+
+export function newEncounter(csv: string): Encounter {
+  const e: Encounter = { id: uuid(), csv, createdAt: new Date() };
+  db.set(e.id, e);
+  return e;
+}
+</file>
+
+<file path="src/lib/utils.ts">
+import { twMerge } from "tailwind-merge";
+import clsx, { ClassValue } from "classnames";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+</file>
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="src/app/globals.css">
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <Toaster richColors />
+        {children}
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="src/app/page.tsx">
+"use client";
+import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import Link from "next/link";
+
+export default function Home() {
+  const [csv, setCsv] = useState("");
+  const [aiNote, setAiNote] = useState("");
+  const [id, setId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleGenerate() {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ csv }),
+      });
+      if (!res.ok) throw new Error("OpenAI error");
+      const { id, aiNote } = await res.json();
+      setId(id);
+      setAiNote(aiNote);
+    } catch (e) {
+      toast.error((e as Error).message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="container mx-auto max-w-4xl space-y-8 py-12">
+      <Card>
+        <h1 className="mb-4 text-xl font-semibold">Paste encounter CSV</h1>
+        <Textarea
+          rows={10}
+          placeholder="--- Module: History --- …"
+          value={csv}
+          onChange={(e) => setCsv(e.target.value)}
+          className="mb-4"
+        />
+        <Button loading={loading} onClick={handleGenerate} disabled={!csv}>
+          Generate SOAP
+        </Button>
+      </Card>
+
+      {loading && <Skeleton className="h-48 w-full" />}
+
+      {aiNote && (
+        <Card>
+          <h2 className="mb-2 text-lg font-semibold">AI-Generated SOAP</h2>
+          <ReactMarkdown className="prose max-w-none">{aiNote}</ReactMarkdown>
+          {id && (
+            <Link href={`/note/${id}`} className="mt-4 inline-block underline">
+              Edit & Review →
+            </Link>
+          )}
+        </Card>
+      )}
+    </main>
+  );
+}
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="eslint.config.mjs">
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+];
+
+export default eslintConfig;
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+</file>
+
+<file path="package.json">
+{
+  "name": "proj-soap",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "next": "15.4.5",
+    "openai": "^4.25.0",
+    "papaparse": "^5.4.1",
+    "react-markdown": "^9.0.0",
+    "uuid": "^9.0.0",
+    "classnames": "^2.5.1",
+    "tailwind-merge": "^2.2.2",
+    "lucide-react": "^0.384.0",
+    "sonner": "^1.2.4"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.5",
+    "@eslint/eslintrc": "^3"
+  }
+}
+</file>
+
+<file path="postcss.config.mjs">
+const config = {
+  plugins: ["@tailwindcss/postcss"],
+};
+
+export default config;
+</file>
+
+<file path="README.md">
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+</file>
+
+</files>
