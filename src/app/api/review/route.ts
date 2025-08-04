@@ -1,30 +1,49 @@
 import { NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 import { db } from "@/lib/store";
+import { clipText } from "@/lib/clipText";
 
 const reviewPrompt = `
-You are an attending physician using the **PDQI-9** rubric.
+You are an attending physician using the **PDQI-9** rubric with emphasis on **clinical appropriateness**.
 
 Notes:
 • NOTE_A = baseline AI-generated SOAP (reference)  
 • NOTE_B = student-edited version
 
-Step 1 – Score BOTH notes  
-  • For each PDQI dimension (up-to-date, accurate, thorough, useful, organized, comprehensible, succinct, synthesized, consistent)  
-    – Give a Likert 1-5 score to NOTE_A.  
-    – Give a Likert 1-5 score to NOTE_B.
+**CRITICAL: Use the CONTEXT transcript to judge clinical appropriateness. Inappropriate treatments/medications for the actual clinical scenario should receive LOW scores (1-2).**
+
+Step 1 – Score BOTH notes (Likert 1-5 scale)
+  • **Scoring Guidelines:**
+    - **5**: Excellent, clinically appropriate, evidence-based
+    - **4**: Good, mostly appropriate with minor issues
+    - **3**: Adequate, some concerns but not harmful
+    - **2**: Poor, inappropriate for clinical scenario or potentially harmful
+    - **1**: Dangerous, contraindicated, or completely inappropriate
+
+  • **Key Dimensions with Clinical Focus:**
+    - **accurate**: Factually correct AND clinically appropriate for the case
+    - **useful**: Helpful for patient care AND safe/appropriate treatments
+    - **thorough**: Complete relevant info WITHOUT inappropriate additions
+    - **up_to_date**: Current guidelines AND appropriate for this patient
+    - **organized/comprehensible/succinct/synthesized/consistent**: Standard PDQI-9
+
+  • **PENALIZE HEAVILY**: 
+    - Wrong medications for the condition (e.g., antibiotics for MI)
+    - Inappropriate treatments that don't match the clinical scenario
+    - Dangerous or contraindicated interventions
 
 Step 2 – Delta  
   • delta = score_B − score_A (range −4→+4).  
   • overall_delta = sum of deltas (range −36→+36).
 
 Step 3 – Edit analysis  
-  • Detect each textual change.  
-  • For each change:  
-      – \`dimension\` it impacts most  
+  • **REQUIRED**: Create a "changes" entry for EVERY dimension with a non-zero delta.  
+  • If delta ≠ 0, you MUST explain why that dimension score changed.  
+  • For each non-zero delta:  
+      – \`dimension\` name (exact PDQI-9 dimension that changed)  
       – \`impact\` improved | worsened | neutral  
-      – \`snippet\` ≤20 words  
-      – \`comment\` coaching ≤25 words
+      – \`snippet\` ≤20 words (specific text that caused the change)  
+      – \`comment\` coaching ≤25 words explaining WHY the score changed
 
 Return STRICT JSON only:
 
@@ -47,18 +66,36 @@ export async function POST(req: Request) {
   }
   enc.studentNote = studentNote;
 
+  const transcript = clipText(enc.csv);
+  console.log("Transcript chars:", transcript.length);
+
   const messages = [
-    { role: "system" as const, content: reviewPrompt },
+    {
+      role: "system" as const,
+      content: reviewPrompt,
+    },
     {
       role: "user" as const,
+      name: "CONTEXT",
       content:
-        `NOTE_A:\n"""\n${enc.aiNote}\n"""\n\n` +
-        `NOTE_B:\n"""\n${studentNote}\n"""`
+        "Full encounter transcript (User & Assistant turns):\n\"\"\"\n" +
+        transcript +
+        "\n\"\"\"",
+    },
+    {
+      role: "user" as const,
+      name: "NOTE_A",
+      content: enc.aiNote,
+    },
+    {
+      role: "user" as const,
+      name: "NOTE_B",
+      content: studentNote,
     },
   ];
 
   const res = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-4o",
     messages,
     temperature: 0,
     response_format: { type: "json_object" },
