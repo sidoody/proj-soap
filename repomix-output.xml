@@ -72,6 +72,7 @@ src/
       skeleton.tsx
       textarea.tsx
   lib/
+    clipText.ts
     openai.ts
     parseCsv.ts
     prompts.ts
@@ -88,6 +89,26 @@ tsconfig.json
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
 
 <file path="src/app/api/debug/route.ts">
 import { NextResponse } from "next/server";
@@ -131,135 +152,32 @@ export async function POST(req: Request) {
 }
 </file>
 
-<file path="src/app/api/review/route.ts">
-import { NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
-import { db } from "@/lib/store";
+<file path="src/app/globals.css">
+@import "tailwindcss";
 
-const reviewPrompt = `
-You are an attending. Compare NOTE_A (AI) with NOTE_B (student).
-For each section S/O/A/P:
-• Accuracy 0-5
-• Completeness 0-5
-• Clarity 0-5
-
-Return valid JSON:
-{
-  "overall_score": 0-100,
-  "section_feedback": {
-    "S": { "score": int, "comment": str },
-    "O": { ... },
-    "A": { ... },
-    "P": { ... }
-  },
-  "global_comment": str
-}`;
-
-export async function POST(req: Request) {
-  const { id, studentNote } = await req.json();
-  const enc = db.get(id);
-  if (!enc?.aiNote) {
-    return NextResponse.json({ error: "Encounter not found" }, { status: 404 });
-  }
-  enc.studentNote = studentNote;
-
-  const messages = [
-    { role: "system" as const, content: reviewPrompt },
-    { role: "user" as const, content: `NOTE_A: ${enc.aiNote}` },
-    { role: "user" as const, content: `NOTE_B: ${studentNote}` },
-  ];
-
-  const res = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages,
-    temperature: 0,
-    response_format: { type: "json_object" },
-  });
-
-  const rubric = JSON.parse(res.choices[0].message.content ?? "{}");
-  enc.reviewJson = rubric;
-  return NextResponse.json(rubric);
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
-</file>
 
-<file path="src/app/note/[id]/page.tsx">
-"use client";
-import ReactMarkdown from "react-markdown";
-import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-manrope);
+}
 
-export default function NotePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params);
-  const [aiNote, setAiNote] = useState<string | null>(null);
-  const [student, setStudent] = useState("");
-  const [review, setReview] = useState<any>(null);
-  const [saving, setSaving] = useState(false);
-
-  // fetch encounter once
-  useEffect(() => {
-    fetch(`/api/debug?id=${id}`)
-      .then((r) => r.ok ? r.json() : Promise.reject("Not found"))
-      .then((d) => {
-        setAiNote(d.aiNote);
-        setStudent(d.studentNote ?? d.aiNote);
-        setReview(d.reviewJson ?? null);
-      })
-      .catch(() => toast.error("Encounter not found"));
-  }, [id]);
-
-  async function handleSubmit() {
-    try {
-      setSaving(true);
-      const r = await fetch("/api/review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, studentNote: student }),
-      });
-      if (!r.ok) throw new Error("Review failed");
-      setReview(await r.json());
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setSaving(false);
-    }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
   }
+}
 
-  return (
-    <main className="container mx-auto max-w-6xl space-y-8 py-8">
-      {!aiNote ? (
-        <Skeleton className="h-64 w-full" />
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card className="overflow-auto">
-            <h2 className="mb-2 text-lg font-semibold">AI SOAP (read-only)</h2>
-            <ReactMarkdown className="prose max-w-none">{aiNote}</ReactMarkdown>
-          </Card>
-
-          <Card>
-            <h2 className="mb-2 text-lg font-semibold">Your SOAP (edit)</h2>
-            <Textarea
-              rows={18}
-              value={student}
-              onChange={(e) => setStudent(e.target.value)}
-            />
-            <Button loading={saving} className="mt-4" onClick={handleSubmit}>
-              Submit for Review
-            </Button>
-
-            {review && (
-              <pre className="mt-6 whitespace-pre-wrap text-sm">
-                {JSON.stringify(review, null, 2)}
-              </pre>
-            )}
-          </Card>
-        </div>
-      )}
-    </main>
-  );
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: var(--foreground);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  min-height: 100vh;
 }
 </file>
 
@@ -276,9 +194,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50",
+        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold uppercase transition-colors disabled:opacity-50",
         variant === "default" &&
-          "bg-black text-white hover:bg-gray-900 focus-visible:ring-gray-400",
+          "bg-yellow-400 text-black hover:bg-yellow-500 focus-visible:ring-yellow-300",
         variant === "secondary" &&
           "bg-gray-100 hover:bg-gray-200 focus-visible:ring-gray-300",
         className
@@ -307,7 +225,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-xl border bg-white shadow-sm dark:bg-zinc-900 p-6",
+        "rounded-xl bg-white shadow-lg dark:bg-zinc-900 p-6",
         className
       )}
     >
@@ -345,6 +263,16 @@ export const Textarea = forwardRef<
   />
 ));
 Textarea.displayName = "Textarea";
+</file>
+
+<file path="src/lib/clipText.ts">
+/** Clip a string to ~8k GPT tokens (~32k chars), keeping start & end. */
+export function clipText(s: string, maxChars = 32000) {
+  if (s.length <= maxChars) return s;
+  const head = s.slice(0, maxChars / 2);
+  const tail = s.slice(-maxChars / 2);
+  return head + "\n...\n[snip]\n...\n" + tail;
+}
 </file>
 
 <file path="src/lib/openai.ts">
@@ -435,164 +363,6 @@ export function cn(...inputs: ClassValue[]) {
 }
 </file>
 
-<file path="public/file.svg">
-<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
-</file>
-
-<file path="public/globe.svg">
-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
-</file>
-
-<file path="public/next.svg">
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
-</file>
-
-<file path="public/vercel.svg">
-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
-</file>
-
-<file path="public/window.svg">
-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
-</file>
-
-<file path="src/app/globals.css">
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-</file>
-
-<file path="src/app/layout.tsx">
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { Toaster } from "sonner";
-import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "Create Next App",
-  description: "Generated by create next app",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Toaster richColors />
-        {children}
-      </body>
-    </html>
-  );
-}
-</file>
-
-<file path="src/app/page.tsx">
-"use client";
-import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
-import Link from "next/link";
-
-export default function Home() {
-  const [csv, setCsv] = useState("");
-  const [aiNote, setAiNote] = useState("");
-  const [id, setId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function handleGenerate() {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ csv }),
-      });
-      if (!res.ok) throw new Error("OpenAI error");
-      const { id, aiNote } = await res.json();
-      setId(id);
-      setAiNote(aiNote);
-    } catch (e) {
-      toast.error((e as Error).message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <main className="container mx-auto max-w-4xl space-y-8 py-12">
-      <Card>
-        <h1 className="mb-4 text-xl font-semibold">Paste encounter CSV</h1>
-        <Textarea
-          rows={10}
-          placeholder="--- Module: History --- …"
-          value={csv}
-          onChange={(e) => setCsv(e.target.value)}
-          className="mb-4"
-        />
-        <Button loading={loading} onClick={handleGenerate} disabled={!csv}>
-          Generate SOAP
-        </Button>
-      </Card>
-
-      {loading && <Skeleton className="h-48 w-full" />}
-
-      {aiNote && (
-        <Card>
-          <h2 className="mb-2 text-lg font-semibold">AI-Generated SOAP</h2>
-          <ReactMarkdown className="prose max-w-none">{aiNote}</ReactMarkdown>
-          {id && (
-            <Link href={`/note/${id}`} className="mt-4 inline-block underline">
-              Edit & Review →
-            </Link>
-          )}
-        </Card>
-      )}
-    </main>
-  );
-}
-</file>
-
 <file path=".gitignore">
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -664,44 +434,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-</file>
-
-<file path="package.json">
-{
-  "name": "proj-soap",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.4.5",
-    "openai": "^4.25.0",
-    "papaparse": "^5.4.1",
-    "react-markdown": "^9.0.0",
-    "uuid": "^9.0.0",
-    "classnames": "^2.5.1",
-    "tailwind-merge": "^2.2.2",
-    "lucide-react": "^0.384.0",
-    "sonner": "^1.2.4"
-  },
-  "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
-    "eslint": "^9",
-    "eslint-config-next": "15.4.5",
-    "@eslint/eslintrc": "^3"
-  }
-}
 </file>
 
 <file path="postcss.config.mjs">
@@ -778,6 +510,500 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
+}
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from "next";
+import { Manrope } from "next/font/google";
+import { Toaster } from "sonner";
+import { Github } from "lucide-react";
+import "./globals.css";
+
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "SOAP Note Q3 Project",
+  description: "AI-powered SOAP note generation from patient encounters",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${manrope.variable} antialiased`}
+      >
+        <Toaster richColors />
+        {children}
+        
+        {/* Footer */}
+        <footer className="mt-16 py-8 border-t border-white/20">
+          <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center">
+              <a 
+                href="https://github.com/sidoody/proj-soap" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-white/60 hover:text-yellow-400 transition-colors"
+              >
+                <Github size={20} />
+              </a>
+            </div>
+          </div>
+        </footer>
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="src/app/page.tsx">
+"use client";
+import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import Link from "next/link";
+
+export default function Home() {
+  const [csv, setCsv] = useState("");
+  const [aiNote, setAiNote] = useState("");
+  const [id, setId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleGenerate() {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ csv }),
+      });
+      if (!res.ok) throw new Error("OpenAI error");
+      const { id, aiNote } = await res.json();
+      setId(id);
+      setAiNote(aiNote);
+    } catch (e) {
+      toast.error((e as Error).message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="container mx-auto max-w-4xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-white mb-8">SOAP Note Q3 Project</h1>
+      </div>
+      
+      <Card>
+        <h1 className="mb-4 text-xl font-semibold">Paste encounter log</h1>
+        <p className="mb-4 text-gray-600">
+          Paste the complete patient interaction into the space below.
+        </p>
+        <div className="mb-4 p-3 bg-gray-50 rounded-md border-l-4 border-blue-400">
+          <p className="text-sm font-medium text-gray-700 mb-2">Example of expected input:</p>
+          <pre className="text-xs text-gray-600 font-mono">
+{`--- Module: History ---
+[11:28:17 AM] User: have you ever felt this chest pain before
+[11:28:18 AM] Assistant: No, it feels unlike anything I've experienced before.`}
+          </pre>
+        </div>
+        <Textarea
+          rows={10}
+          placeholder="--- Module: History --- …"
+          value={csv}
+          onChange={(e) => setCsv(e.target.value)}
+          className="mb-4"
+        />
+        <Button loading={loading} onClick={handleGenerate} disabled={!csv}>
+          Generate SOAP
+        </Button>
+      </Card>
+
+      {loading && <Skeleton className="h-48 w-full" />}
+
+      {aiNote && (
+        <Card>
+          <h2 className="mb-2 text-lg font-semibold">AI-Generated SOAP</h2>
+          <ReactMarkdown className="prose max-w-none">{aiNote}</ReactMarkdown>
+          {id && (
+            <Link href={`/note/${id}`} className="mt-4 inline-block underline">
+              Edit & Review →
+            </Link>
+          )}
+        </Card>
+      )}
+    </main>
+  );
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "proj-soap",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.3",
+    "classnames": "^2.5.1",
+    "framer-motion": "^12.23.12",
+    "lucide-react": "^0.384.0",
+    "next": "15.4.5",
+    "openai": "^4.25.0",
+    "papaparse": "^5.4.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-markdown": "^9.0.0",
+    "sonner": "^1.2.4",
+    "tailwind-merge": "^2.2.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.5",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+</file>
+
+<file path="src/app/note/[id]/page.tsx">
+"use client";
+import ReactMarkdown from "react-markdown";
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+
+// Review component for displaying feedback
+function ReviewDisplay({ review }: { review: any }) {
+  const dimensionNames = {
+    up_to_date: "Up-to-Date",
+    accurate: "Accurate", 
+    thorough: "Thorough",
+    useful: "Useful",
+    organized: "Organized",
+    comprehensible: "Comprehensible",
+    succinct: "Succinct",
+    synthesized: "Synthesized",
+    consistent: "Consistent"
+  };
+
+
+  const getDeltaColor = (delta: number) => {
+    if (delta >= 2) return "text-green-600 bg-green-50";
+    if (delta >= 0) return "text-yellow-600 bg-yellow-50";
+
+    return "text-red-600 bg-red-50";
+  };
+
+  const getOverallDeltaColor = (delta: number) => {
+    if (delta >= 10) return "text-green-600 bg-green-50";
+    if (delta >= 0) return "text-yellow-600 bg-yellow-50";
+    return "text-red-600 bg-red-50";
+  };
+
+  const getImpactColor = (impact: string) => {
+    if (impact === "improved") return "text-green-600 bg-green-100";
+    if (impact === "worsened") return "text-red-600 bg-red-100";
+    return "text-gray-600 bg-gray-100";
+  };
+
+  // Group changes by dimension
+  const changesByDimension = (review.changes || []).reduce((acc: any, change: any) => {
+    if (!acc[change.dimension]) acc[change.dimension] = [];
+    acc[change.dimension].push(change);
+    return acc;
+  }, {});
+
+  return (
+    <div className="mt-6 space-y-4">
+
+      {/* PDQI-9 Detailed Scoring */}
+      <div className="space-y-4">
+        <h3 className="font-semibold text-lg">PDQI-9 Detailed Scoring</h3>
+        
+        {/* Score Summary Table */}
+        <div className="border rounded-lg overflow-hidden">
+          <div className="bg-gray-50 p-3 border-b">
+            <div className="grid grid-cols-4 gap-2 text-sm font-medium text-gray-700">
+              <div>Dimension</div>
+              <div className="text-center">Baseline</div>
+              <div className="text-center">Student</div>
+              <div className="text-center">Delta</div>
+
+            </div>
+          </div>
+          {Object.entries(dimensionNames).map(([key, name]) => {
+            const baselineScore = review.baseline_scores?.[key] || 0;
+            const studentScore = review.student_scores?.[key] || 0;
+            const deltaScore = review.delta_scores?.[key] || 0;
+            
+            return (
+              <div key={key} className="p-3 border-b border-gray-100 last:border-b-0">
+                <div className="grid grid-cols-4 gap-2 text-sm">
+                  <div className="font-medium">{name}</div>
+                  <div className="text-center text-gray-600">{baselineScore}/5</div>
+                  <div className="text-center text-gray-600">{studentScore}/5</div>
+                  <div className={`text-center font-semibold ${getDeltaColor(deltaScore)}`}>
+                    {deltaScore > 0 ? '+' : ''}{deltaScore}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Individual Dimension Details */}
+        {Object.entries(dimensionNames).map(([key, name]) => {
+          const deltaScore = review.delta_scores?.[key] || 0;
+          const dimensionChanges = changesByDimension[key] || [];
+          
+          if (dimensionChanges.length === 0) return null;
+          
+          return (
+            <div key={key} className={`border rounded-lg p-4 ${getDeltaColor(deltaScore)}`}>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium">{name}</h4>
+                <span className="font-semibold text-lg">
+                  {deltaScore > 0 ? '+' : ''}{deltaScore}
+                </span>
+              </div>
+              
+              {/* Changes for this dimension */}
+              <div className="space-y-2">
+                {dimensionChanges.map((change: any, index: number) => (
+                  <div key={index} className="bg-white bg-opacity-50 rounded p-3 border-l-4 border-gray-300">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`font-medium text-sm px-2 py-1 rounded ${getImpactColor(change.impact)}`}>
+                        {change.impact}
+                      </span>
+                      <span className="text-xs text-gray-600 font-mono bg-gray-100 px-2 py-1 rounded">
+                        "{change.snippet}"
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-700">{change.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Global Comment */}
+      {review.global_comment && (
+        <div className="border rounded-lg p-4 bg-blue-50">
+          <h3 className="font-semibold text-lg mb-2">Overall Feedback</h3>
+          <p className="text-gray-700">{review.global_comment}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function NotePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
+  const [aiNote, setAiNote] = useState<string | null>(null);
+  const [student, setStudent] = useState("");
+  const [review, setReview] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+
+  // fetch encounter once
+  useEffect(() => {
+    fetch(`/api/debug?id=${id}`)
+      .then((r) => r.ok ? r.json() : Promise.reject("Not found"))
+      .then((d) => {
+        setAiNote(d.aiNote);
+        setStudent(d.studentNote ?? d.aiNote);
+        setReview(d.reviewJson ?? null);
+      })
+      .catch(() => toast.error("Encounter not found"));
+  }, [id]);
+
+  async function handleSubmit() {
+    try {
+      setSaving(true);
+      const r = await fetch("/api/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, studentNote: student }),
+      });
+      if (!r.ok) throw new Error("Review failed");
+      setReview(await r.json());
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <main className="container mx-auto max-w-6xl space-y-8 py-8 px-4 sm:px-6 lg:px-8">
+      {!aiNote ? (
+        <Skeleton className="h-64 w-full" />
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card className="overflow-auto">
+            <h2 className="mb-2 text-lg font-semibold">AI SOAP (read-only)</h2>
+            <ReactMarkdown className="prose max-w-none">{aiNote}</ReactMarkdown>
+          </Card>
+
+          <Card>
+            <h2 className="mb-2 text-lg font-semibold">Your SOAP (edit)</h2>
+            <Textarea
+              rows={18}
+              value={student}
+              onChange={(e) => setStudent(e.target.value)}
+            />
+            <Button loading={saving} className="mt-4" onClick={handleSubmit}>
+              Submit for Review
+            </Button>
+
+            {review && <ReviewDisplay review={review} />}
+          </Card>
+        </div>
+      )}
+    </main>
+  );
+}
+</file>
+
+<file path="src/app/api/review/route.ts">
+import { NextResponse } from "next/server";
+import { openai } from "@/lib/openai";
+import { db } from "@/lib/store";
+import { clipText } from "@/lib/clipText";
+
+const reviewPrompt = `
+
+You are an attending physician using the **PDQI-9** rubric with emphasis on **clinical appropriateness**.
+
+Notes:
+• NOTE_A = baseline AI-generated SOAP (reference)  
+• NOTE_B = student-edited version
+
+**CRITICAL: Use the CONTEXT transcript to judge clinical appropriateness. Inappropriate treatments/medications for the actual clinical scenario should receive LOW scores (1-2).**
+
+Step 1 – Score BOTH notes (Likert 1-5 scale)
+  • **Scoring Guidelines:**
+    - **5**: Excellent, clinically appropriate, evidence-based
+    - **4**: Good, mostly appropriate with minor issues
+    - **3**: Adequate, some concerns but not harmful
+    - **2**: Poor, inappropriate for clinical scenario or potentially harmful
+    - **1**: Dangerous, contraindicated, or completely inappropriate
+
+  • **Key Dimensions with Clinical Focus:**
+    - **accurate**: Factually correct AND clinically appropriate for the case
+    - **useful**: Helpful for patient care AND safe/appropriate treatments
+    - **thorough**: Complete relevant info WITHOUT inappropriate additions
+    - **up_to_date**: Current guidelines AND appropriate for this patient
+    - **organized/comprehensible/succinct/synthesized/consistent**: Standard PDQI-9
+
+  • **PENALIZE HEAVILY**: 
+    - Wrong medications for the condition (e.g., antibiotics for MI)
+    - Inappropriate treatments that don't match the clinical scenario
+    - Dangerous or contraindicated interventions
+
+Step 2 – Delta  
+  • delta = score_B − score_A (range −4→+4).  
+  • overall_delta = sum of deltas (range −36→+36).
+
+Step 3 – Edit analysis  
+  • **REQUIRED**: Create a "changes" entry for EVERY dimension with a non-zero delta.  
+  • If delta ≠ 0, you MUST explain why that dimension score changed.  
+  • For each non-zero delta:  
+      – \`dimension\` name (exact PDQI-9 dimension that changed)  
+      – \`impact\` improved | worsened | neutral  
+      – \`snippet\` ≤20 words (specific text that caused the change)  
+      – \`comment\` coaching ≤25 words explaining WHY the score changed
+
+Return STRICT JSON only:
+
+{
+  "baseline_scores":    { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "student_scores":     { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "delta_scores":       { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "overall_delta": int,
+  "changes": [
+     { "dimension":str, "impact":str, "snippet":str, "comment":str }
+  ],
+
+  "global_comment": str
+}`;
+
+export async function POST(req: Request) {
+  const { id, studentNote } = await req.json();
+  const enc = db.get(id);
+  if (!enc?.aiNote) {
+    return NextResponse.json({ error: "Encounter not found" }, { status: 404 });
+  }
+  enc.studentNote = studentNote;
+
+  const transcript = clipText(enc.csv);
+  console.log("Transcript chars:", transcript.length);
+
+  const messages = [
+    {
+      role: "system" as const,
+      content: reviewPrompt,
+    },
+    {
+      role: "user" as const,
+      name: "CONTEXT",
+      content:
+        "Full encounter transcript (User & Assistant turns):\n\"\"\"\n" +
+        transcript +
+        "\n\"\"\"",
+    },
+    {
+      role: "user" as const,
+      name: "NOTE_A",
+      content: enc.aiNote,
+    },
+    {
+      role: "user" as const,
+      name: "NOTE_B",
+      content: studentNote,
+
+    },
+  ];
+
+  const res = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages,
+    temperature: 0,
+    response_format: { type: "json_object" },
+  });
+
+  const rubric = JSON.parse(res.choices[0].message.content ?? "{}");
+  enc.reviewJson = rubric;
+  return NextResponse.json(rubric);
 }
 </file>
 

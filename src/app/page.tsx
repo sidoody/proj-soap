@@ -34,9 +34,24 @@ export default function Home() {
   }
 
   return (
-    <main className="container mx-auto max-w-4xl space-y-8 py-12">
+    <main className="container mx-auto max-w-4xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-white mb-8">SOAP Note Q3 Project</h1>
+      </div>
+      
       <Card>
-        <h1 className="mb-4 text-xl font-semibold">Paste encounter CSV</h1>
+        <h1 className="mb-4 text-xl font-semibold">Paste encounter log</h1>
+        <p className="mb-4 text-gray-600">
+          Paste the complete patient interaction into the space below.
+        </p>
+        <div className="mb-4 p-3 bg-gray-50 rounded-md border-l-4 border-blue-400">
+          <p className="text-sm font-medium text-gray-700 mb-2">Example of expected input:</p>
+          <pre className="text-xs text-gray-600 font-mono">
+{`--- Module: History ---
+[11:28:17 AM] User: have you ever felt this chest pain before
+[11:28:18 AM] Assistant: No, it feels unlike anything I've experienced before.`}
+          </pre>
+        </div>
         <Textarea
           rows={10}
           placeholder="--- Module: History --- …"
