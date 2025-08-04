@@ -21,9 +21,11 @@ function ReviewDisplay({ review }: { review: any }) {
     consistent: "Consistent"
   };
 
+
   const getDeltaColor = (delta: number) => {
     if (delta >= 2) return "text-green-600 bg-green-50";
     if (delta >= 0) return "text-yellow-600 bg-yellow-50";
+
     return "text-red-600 bg-red-50";
   };
 
@@ -48,6 +50,7 @@ function ReviewDisplay({ review }: { review: any }) {
 
   return (
     <div className="mt-6 space-y-4">
+
       {/* PDQI-9 Detailed Scoring */}
       <div className="space-y-4">
         <h3 className="font-semibold text-lg">PDQI-9 Detailed Scoring</h3>
@@ -60,6 +63,7 @@ function ReviewDisplay({ review }: { review: any }) {
               <div className="text-center">Baseline</div>
               <div className="text-center">Student</div>
               <div className="text-center">Delta</div>
+
             </div>
           </div>
           {Object.entries(dimensionNames).map(([key, name]) => {

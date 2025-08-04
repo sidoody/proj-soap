@@ -4,6 +4,7 @@ import { db } from "@/lib/store";
 import { clipText } from "@/lib/clipText";
 
 const reviewPrompt = `
+
 You are an attending physician using the **PDQI-9** rubric with emphasis on **clinical appropriateness**.
 
 Notes:
@@ -55,6 +56,7 @@ Return STRICT JSON only:
   "changes": [
      { "dimension":str, "impact":str, "snippet":str, "comment":str }
   ],
+
   "global_comment": str
 }`;
 
@@ -91,6 +93,7 @@ export async function POST(req: Request) {
       role: "user" as const,
       name: "NOTE_B",
       content: studentNote,
+
     },
   ];
 
