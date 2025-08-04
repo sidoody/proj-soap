@@ -5,16 +5,16 @@ export interface Encounter {
   csv: string;
   aiNote?: string;
   studentNote?: string;
-  reviewJson?: any;
+  reviewJson?: Record<string, unknown>;
   createdAt: Date;
 }
 
 // Use a single Map instance attached to globalThis
 const globalStore =
-  (globalThis as any).__encounterStore as Map<string, Encounter> | undefined;
+  (globalThis as unknown as { __encounterStore?: Map<string, Encounter> }).__encounterStore;
 
 export const db: Map<string, Encounter> =
-  globalStore ?? ((globalThis as any).__encounterStore = new Map());
+  globalStore ?? ((globalThis as unknown as { __encounterStore: Map<string, Encounter> }).__encounterStore = new Map());
 
 export function newEncounter(csv: string): Encounter {
   const e: Encounter = { id: uuid(), csv, createdAt: new Date() };

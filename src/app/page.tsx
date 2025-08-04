@@ -49,12 +49,13 @@ export default function Home() {
           <pre className="text-xs text-gray-600 font-mono whitespace-pre-wrap break-words overflow-x-auto">
 {`--- Module: History ---
 [11:28:17 AM] User: have you ever felt this chest pain before
-[11:28:18 AM] Assistant: No, it feels unlike anything I've experienced before.`}
+[11:28:18 AM] Assistant: No, it feels unlike anything I've experienced before.
+...[remaining interactions and modules]`}
           </pre>
         </div>
         <Textarea
           rows={10}
-          placeholder="--- Module: History --- …"
+          placeholder=""
           value={csv}
           onChange={(e) => setCsv(e.target.value)}
           className="mb-4"

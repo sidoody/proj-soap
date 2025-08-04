@@ -7,8 +7,26 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SOAPNote } from "@/components/ui/soap-note";
 import { toast } from "sonner";
 
+// Types for review data
+interface ReviewChange {
+  dimension: string;
+  impact: string;
+  snippet: string;
+  comment: string;
+  delta: number;
+}
+
+interface Review {
+  changes?: ReviewChange[];
+  global_comment?: string;
+  baseline_scores?: Record<string, number>;
+  student_scores?: Record<string, number>;
+  delta_scores?: Record<string, number>;
+  [key: string]: unknown;
+}
+
 // Review component for displaying feedback
-function ReviewDisplay({ review }: { review: any }) {
+function ReviewDisplay({ review }: { review: Review }) {
   const dimensionNames = {
     up_to_date: "Up-to-Date",
     accurate: "Accurate", 
@@ -21,11 +39,9 @@ function ReviewDisplay({ review }: { review: any }) {
     consistent: "Consistent"
   };
 
-
   const getDeltaColor = (delta: number) => {
     if (delta >= 2) return "text-green-600 bg-green-50";
     if (delta >= 0) return "text-yellow-600 bg-yellow-50";
-
     return "text-red-600 bg-red-50";
   };
 
@@ -42,7 +58,7 @@ function ReviewDisplay({ review }: { review: any }) {
   };
 
   // Group changes by dimension
-  const changesByDimension = (review.changes || []).reduce((acc: any, change: any) => {
+  const changesByDimension = (review.changes || []).reduce((acc: Record<string, ReviewChange[]>, change: ReviewChange) => {
     if (!acc[change.dimension]) acc[change.dimension] = [];
     acc[change.dimension].push(change);
     return acc;
@@ -104,14 +120,14 @@ function ReviewDisplay({ review }: { review: any }) {
               
               {/* Changes for this dimension */}
               <div className="space-y-2">
-                {dimensionChanges.map((change: any, index: number) => (
+                {dimensionChanges.map((change: ReviewChange, index: number) => (
                   <div key={index} className="bg-white bg-opacity-50 rounded p-3 border-l-4 border-gray-300">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`font-medium text-sm px-2 py-1 rounded ${getImpactColor(change.impact)}`}>
                         {change.impact}
                       </span>
                       <span className="text-xs text-gray-600 font-mono bg-gray-100 px-2 py-1 rounded">
-                        "{change.snippet}"
+                        &quot;{change.snippet}&quot;
                       </span>
                     </div>
                     <p className="text-sm text-gray-700">{change.comment}</p>
@@ -138,7 +154,7 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
   const { id } = React.use(params);
   const [aiNote, setAiNote] = useState<string | null>(null);
   const [student, setStudent] = useState("");
-  const [review, setReview] = useState<any>(null);
+  const [review, setReview] = useState<Review | null>(null);
   const [saving, setSaving] = useState(false);
 
   // fetch encounter once
