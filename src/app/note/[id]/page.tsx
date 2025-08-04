@@ -9,47 +9,79 @@ import { toast } from "sonner";
 
 // Review component for displaying feedback
 function ReviewDisplay({ review }: { review: any }) {
-  const sectionNames = {
-    S: "Subjective",
-    O: "Objective", 
-    A: "Assessment",
-    P: "Plan"
+  const dimensionNames = {
+    up_to_date: "Up-to-Date",
+    accurate: "Accurate", 
+    thorough: "Thorough",
+    useful: "Useful",
+    organized: "Organized",
+    comprehensible: "Comprehensible",
+    succinct: "Succinct",
+    synthesized: "Synthesized",
+    consistent: "Consistent"
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-600 bg-green-50";
-    if (score >= 60) return "text-yellow-600 bg-yellow-50";
+  const getDeltaColor = (delta: number) => {
+    if (delta >= 2) return "text-green-600 bg-green-50";
+    if (delta >= 0) return "text-yellow-600 bg-yellow-50";
     return "text-red-600 bg-red-50";
   };
 
-  const getSectionScoreColor = (score: number) => {
-    if (score >= 4) return "text-green-600";
-    if (score >= 3) return "text-yellow-600";
-    return "text-red-600";
+  const getOverallDeltaColor = (delta: number) => {
+    if (delta >= 10) return "text-green-600 bg-green-50";
+    if (delta >= 0) return "text-yellow-600 bg-yellow-50";
+    return "text-red-600 bg-red-50";
+  };
+
+  const getImpactColor = (impact: string) => {
+    if (impact === "improved") return "text-green-600";
+    if (impact === "worsened") return "text-red-600";
+    return "text-gray-600";
   };
 
   return (
     <div className="mt-6 space-y-4">
-      {/* Overall Score */}
-      <div className={`p-4 rounded-lg border ${getScoreColor(review.overall_score)}`}>
-        <h3 className="font-semibold text-lg">Overall Score</h3>
-        <div className="text-3xl font-bold">{review.overall_score}/100</div>
+      {/* Overall Delta Score */}
+      <div className={`p-4 rounded-lg border ${getOverallDeltaColor(review.overall_delta || 0)}`}>
+        <h3 className="font-semibold text-lg">Overall Delta Score</h3>
+        <div className="text-3xl font-bold">
+          {review.overall_delta > 0 ? '+' : ''}{review.overall_delta || 0}/45
+        </div>
+        <p className="text-sm mt-1">Range: -45 (much worse) to +45 (much better)</p>
       </div>
 
-      {/* Section Feedback */}
+      {/* PDQI-9 Dimension Feedback */}
       <div className="space-y-3">
-        <h3 className="font-semibold text-lg">Section Feedback</h3>
-        {Object.entries(review.section_feedback || {}).map(([section, feedback]: [string, any]) => (
-          <div key={section} className="border rounded-lg p-4 bg-gray-50">
-            <div className="flex items-center justify-between mb-2">
+        <h3 className="font-semibold text-lg">PDQI-9 Dimension Feedback</h3>
+        {Object.entries(review.dimension_feedback || {}).map(([dimension, feedback]: [string, any]) => (
+          <div key={dimension} className={`border rounded-lg p-4 ${getDeltaColor(feedback.delta || 0)}`}>
+            <div className="flex items-center justify-between mb-3">
               <h4 className="font-medium">
-                {section} - {sectionNames[section as keyof typeof sectionNames]}
+                {dimensionNames[dimension as keyof typeof dimensionNames]}
               </h4>
-              <span className={`font-semibold ${getSectionScoreColor(feedback.score)}`}>
-                {feedback.score}/5
+              <span className="font-semibold text-lg">
+                {feedback.delta > 0 ? '+' : ''}{feedback.delta || 0}
               </span>
             </div>
-            <p className="text-gray-700 text-sm">{feedback.comment}</p>
+            
+            {/* Changes for this dimension */}
+            {feedback.changes && feedback.changes.length > 0 && (
+              <div className="space-y-2">
+                {feedback.changes.map((change: any, index: number) => (
+                  <div key={index} className="bg-white bg-opacity-50 rounded p-3 border-l-4 border-gray-300">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`font-medium text-sm px-2 py-1 rounded ${getImpactColor(change.impact)}`}>
+                        {change.impact}
+                      </span>
+                      <span className="text-xs text-gray-600 font-mono bg-gray-100 px-2 py-1 rounded">
+                        "{change.snippet}"
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-700">{change.comment}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
