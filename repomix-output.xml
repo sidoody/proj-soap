@@ -70,6 +70,7 @@ src/
       button.tsx
       card.tsx
       skeleton.tsx
+      soap-note.tsx
       textarea.tsx
   lib/
     clipText.ts
@@ -152,95 +153,83 @@ export async function POST(req: Request) {
 }
 </file>
 
-<file path="src/app/globals.css">
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-manrope);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: var(--foreground);
-  font-family: var(--font-manrope), system-ui, sans-serif;
-  min-height: 100vh;
-}
-</file>
-
-<file path="src/components/ui/button.tsx">
-import { forwardRef, ButtonHTMLAttributes } from "react";
-import { cn } from "@/lib/utils";
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "default" | "secondary";
-  loading?: boolean;
-}
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", loading, children, ...props }, ref) => (
-    <button
-      ref={ref}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold uppercase transition-colors disabled:opacity-50",
-        variant === "default" &&
-          "bg-yellow-400 text-black hover:bg-yellow-500 focus-visible:ring-yellow-300",
-        variant === "secondary" &&
-          "bg-gray-100 hover:bg-gray-200 focus-visible:ring-gray-300",
-        className
-      )}
-      disabled={loading || props.disabled}
-      {...props}
-    >
-      {loading && <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />}
-      {children}
-    </button>
-  )
-);
-Button.displayName = "Button";
-</file>
-
-<file path="src/components/ui/card.tsx">
-import { cn } from "@/lib/utils";
-
-export function Card({
-  className,
-  children,
-}: {
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className={cn(
-        "rounded-xl bg-white shadow-lg dark:bg-zinc-900 p-6",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-</file>
-
 <file path="src/components/ui/skeleton.tsx">
 export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className={`animate-pulse rounded-md bg-gray-200 dark:bg-zinc-800 ${className}`}
     />
+  );
+}
+</file>
+
+<file path="src/components/ui/soap-note.tsx">
+import ReactMarkdown from "react-markdown";
+import { cn } from "@/lib/utils";
+
+interface SOAPNoteProps {
+  content: string;
+  className?: string;
+}
+
+export function SOAPNote({ content, className }: SOAPNoteProps) {
+  return (
+    <div className={cn("soap-note", className)}>
+      <ReactMarkdown
+        className="prose prose-slate max-w-none"
+        components={{
+          // Enhanced heading styling for SOAP sections
+          h2: ({ children }) => (
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-8 mb-4 pb-2 border-b-2 border-blue-200 dark:border-blue-700 first:mt-0">
+              {children}
+            </h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3">
+              {children}
+            </h3>
+          ),
+          // Enhanced paragraph styling with better spacing
+          p: ({ children }) => (
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 text-base">
+              {children}
+            </p>
+          ),
+          // Enhanced list styling for medical bullet points
+          ul: ({ children }) => (
+            <ul className="space-y-2 mb-6 ml-4">
+              {children}
+            </ul>
+          ),
+          li: ({ children }) => (
+            <li className="text-gray-700 dark:text-gray-300 leading-relaxed flex items-start">
+              <span className="text-blue-600 dark:text-blue-400 font-bold mr-3 mt-1 text-sm">•</span>
+              <span className="flex-1">{children}</span>
+            </li>
+          ),
+          // Enhanced strong/bold text for medical emphasis
+          strong: ({ children }) => (
+            <strong className="font-semibold text-gray-900 dark:text-gray-100">
+              {children}
+            </strong>
+          ),
+          // Enhanced em/italic for medical terminology
+          em: ({ children }) => (
+            <em className="italic text-gray-800 dark:text-gray-200">
+              {children}
+            </em>
+          ),
+          // Code blocks for measurements/values
+          code: ({ children }) => (
+            <code className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-sm font-mono">
+              {children}
+            </code>
+          ),
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
   );
 }
 </file>
@@ -302,30 +291,6 @@ export function csvToChat(csv: string): ChatCompletionMessageParam[] {
       } as ChatCompletionMessageParam;
     });
 }
-</file>
-
-<file path="src/lib/prompts.ts">
-export const systemSOAP = `
-You are a careful medical scribe.
-Write a concise **SOAP note** in markdown.
-
-**S – Subjective**
-• bulleted HPI & ROS
-
-**O – Objective**
-• vitals, focused exam, labs / EKG lines seen
-
-**A – Assessment**
-• 1–2-sentence summary + top differential
-
-**P – Plan**
-• bullets of diagnostics, therapeutics, disposition
-
-Rules:
-• 3rd-person ("Mr. Jones states …")
-• If data missing, write "—" and DO NOT fabricate
-• ≤6 bullets per list
-`;
 </file>
 
 <file path="src/lib/store.ts">
@@ -513,6 +478,167 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 }
 </file>
 
+<file path="src/components/ui/button.tsx">
+import { forwardRef, ButtonHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "default" | "secondary";
+  loading?: boolean;
+}
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = "default", loading, children, ...props }, ref) => (
+    <button
+      ref={ref}
+      className={cn(
+        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold uppercase transition-colors disabled:opacity-50",
+        variant === "default" &&
+          "bg-yellow-400 text-black hover:bg-yellow-500 focus-visible:ring-yellow-300",
+        variant === "secondary" &&
+          "bg-gray-100 hover:bg-gray-200 focus-visible:ring-gray-300",
+        className
+      )}
+      disabled={loading || props.disabled}
+      {...props}
+    >
+      {loading && <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />}
+      {children}
+    </button>
+  )
+);
+Button.displayName = "Button";
+</file>
+
+<file path="src/components/ui/card.tsx">
+import { cn } from "@/lib/utils";
+
+export function Card({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-xl bg-white shadow-lg dark:bg-zinc-900 p-6",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+</file>
+
+<file path="src/lib/prompts.ts">
+export const systemSOAP = `
+You are a meticulous medical scribe. From the **patient’s statements _and_ all actions ALREADY performed in this encounter** (ignore clinician questions), craft a concise **markdown** SOAP note.
+
+## S – Subjective
+
+**HPI (paragraph)** – Chief complaint, onset/chronology, quality, radiation, aggravating & relieving factors, pertinent positives **and** negatives, medication & risk-factor context.  
+**ROS (≤ 6 bullets)** – Focused positives/negatives not already in HPI.
+
+## O – Objective (≤ 6 bullets total)
+
+• **Vitals**: write all provided vitals or “—”  
+• **Physical Exam**: focused findings or “—”  
+• **Diagnostics**: include **every** EKG/lab/imaging result mentioned; collapse duplicates (e.g., “ECG: ST-elevation V2–V4, T-wave inversion III”). Use “—” if none.
+
+## A – Assessment
+
+1–2 sentences: patient profile, pivotal findings, **ranked** leading differential (e.g., “ACS > unstable angina > pericarditis”).
+
+## P – Plan
+
+### Completed (what _has already been done_)  
+• List interventions that the transcript shows were **ordered _and_ acknowledged as carried out** (keywords: *administered, started, given, established, attached, initiated*).  
+*Do **not** list these again in “Next”.*
+
+### Next (what is still pending)  
+• Diagnostics, therapeutics, disposition **not yet performed** (≤ 6 bullets combined with “Completed”).  
+Use “—” if nothing remains.
+
+---
+
+### Formatting rules
+• Third-person throughout (“Mr. Jones states …”).  
+• ≤ 6 bullets in ROS, Objective, and **combined** Plan sections.  
+• Use “—” when information is absent; never invent data.  
+• Resolve conflicting patient statements by preferring the **most specific or recent** information.  
+• Preserve clinically important wording (e.g., “heart attack,” not “heart failure,” if that’s what was said).  
+• Keep the entire note ≤ 250 words.
+`;
+</file>
+
+<file path="src/app/globals.css">
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-manrope);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: var(--foreground);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* Enhanced SOAP Note Formatting */
+.soap-note {
+  line-height: 1.7;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+.soap-note h2 {
+  letter-spacing: -0.025em;
+}
+
+.soap-note p {
+  text-align: justify;
+  hyphens: auto;
+}
+
+.soap-note ul {
+  list-style: none;
+}
+
+.soap-note strong {
+  font-weight: 600;
+}
+
+/* Improved readability for medical content */
+.soap-note code {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Better spacing for nested content */
+.soap-note li p {
+  margin-bottom: 0.5rem;
+}
+
+.soap-note li:last-child {
+  margin-bottom: 0;
+}
+</file>
+
 <file path="src/app/layout.tsx">
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
@@ -564,91 +690,6 @@ export default function RootLayout({
 }
 </file>
 
-<file path="src/app/page.tsx">
-"use client";
-import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
-import Link from "next/link";
-
-export default function Home() {
-  const [csv, setCsv] = useState("");
-  const [aiNote, setAiNote] = useState("");
-  const [id, setId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function handleGenerate() {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ csv }),
-      });
-      if (!res.ok) throw new Error("OpenAI error");
-      const { id, aiNote } = await res.json();
-      setId(id);
-      setAiNote(aiNote);
-    } catch (e) {
-      toast.error((e as Error).message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <main className="container mx-auto max-w-4xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-white mb-8">SOAP Note Q3 Project</h1>
-      </div>
-      
-      <Card>
-        <h1 className="mb-4 text-xl font-semibold">Paste encounter log</h1>
-        <p className="mb-4 text-gray-600">
-          Paste the complete patient interaction into the space below.
-        </p>
-        <div className="mb-4 p-3 bg-gray-50 rounded-md border-l-4 border-blue-400">
-          <p className="text-sm font-medium text-gray-700 mb-2">Example of expected input:</p>
-          <pre className="text-xs text-gray-600 font-mono">
-{`--- Module: History ---
-[11:28:17 AM] User: have you ever felt this chest pain before
-[11:28:18 AM] Assistant: No, it feels unlike anything I've experienced before.`}
-          </pre>
-        </div>
-        <Textarea
-          rows={10}
-          placeholder="--- Module: History --- …"
-          value={csv}
-          onChange={(e) => setCsv(e.target.value)}
-          className="mb-4"
-        />
-        <Button loading={loading} onClick={handleGenerate} disabled={!csv}>
-          Generate SOAP
-        </Button>
-      </Card>
-
-      {loading && <Skeleton className="h-48 w-full" />}
-
-      {aiNote && (
-        <Card>
-          <h2 className="mb-2 text-lg font-semibold">AI-Generated SOAP</h2>
-          <ReactMarkdown className="prose max-w-none">{aiNote}</ReactMarkdown>
-          {id && (
-            <Link href={`/note/${id}`} className="mt-4 inline-block underline">
-              Edit & Review →
-            </Link>
-          )}
-        </Card>
-      )}
-    </main>
-  );
-}
-</file>
-
 <file path="package.json">
 {
   "name": "proj-soap",
@@ -690,14 +731,212 @@ export default function Home() {
 }
 </file>
 
+<file path="src/app/page.tsx">
+"use client";
+import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SOAPNote } from "@/components/ui/soap-note";
+import { toast } from "sonner";
+import Link from "next/link";
+
+export default function Home() {
+  const [csv, setCsv] = useState("");
+  const [aiNote, setAiNote] = useState("");
+  const [id, setId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleGenerate() {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ csv }),
+      });
+      if (!res.ok) throw new Error("OpenAI error");
+      const { id, aiNote } = await res.json();
+      setId(id);
+      setAiNote(aiNote);
+    } catch (e) {
+      toast.error((e as Error).message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="container mx-auto max-w-4xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-white mb-8">Project SOAP</h1>
+      </div>
+      
+      <Card>
+        <h1 className="mb-4 text-xl font-semibold">Paste encounter log</h1>
+        <p className="mb-4 text-gray-600">
+          Paste the complete patient interaction into the space below.
+        </p>
+        <div className="mb-4 p-3 bg-gray-50 rounded-md border-l-4 border-blue-400">
+          <p className="text-sm font-medium text-gray-700 mb-2">Example of expected input:</p>
+          <pre className="text-xs text-gray-600 font-mono whitespace-pre-wrap break-words overflow-x-auto">
+{`--- Module: History ---
+[11:28:17 AM] User: have you ever felt this chest pain before
+[11:28:18 AM] Assistant: No, it feels unlike anything I've experienced before.`}
+          </pre>
+        </div>
+        <Textarea
+          rows={10}
+          placeholder="--- Module: History --- …"
+          value={csv}
+          onChange={(e) => setCsv(e.target.value)}
+          className="mb-4"
+        />
+        <Button loading={loading} onClick={handleGenerate} disabled={!csv}>
+          Generate SOAP
+        </Button>
+      </Card>
+
+      {loading && <Skeleton className="h-48 w-full" />}
+
+      {aiNote && (
+        <Card>
+          <h2 className="mb-2 text-lg font-semibold">AI-Generated SOAP</h2>
+          <SOAPNote content={aiNote} />
+          {id && (
+            <Link href={`/note/${id}`} className="mt-4 inline-block underline">
+              Edit & Review →
+            </Link>
+          )}
+        </Card>
+      )}
+    </main>
+  );
+}
+</file>
+
+<file path="src/app/api/review/route.ts">
+import { NextResponse } from "next/server";
+import { openai } from "@/lib/openai";
+import { db } from "@/lib/store";
+import { clipText } from "@/lib/clipText";
+
+const reviewPrompt = `
+
+You are an attending physician using the **PDQI-9** rubric with emphasis on **clinical appropriateness**.
+
+Notes:
+• NOTE_A = baseline AI-generated SOAP (reference)  
+• NOTE_B = student-edited version
+
+**CRITICAL: Use the CONTEXT transcript to judge clinical appropriateness. Inappropriate treatments/medications for the actual clinical scenario should receive LOW scores (1-2).**
+
+Step 1 – Score BOTH notes (Likert 1-5 scale)
+  • **Scoring Guidelines:**
+    - **5**: Excellent, clinically appropriate, evidence-based
+    - **4**: Good, mostly appropriate with minor issues
+    - **3**: Adequate, some concerns but not harmful
+    - **2**: Poor, inappropriate for clinical scenario or potentially harmful
+    - **1**: Dangerous, contraindicated, or completely inappropriate
+
+  • **Key Dimensions with Clinical Focus:**
+    - **accurate**: Factually correct AND clinically appropriate for the case
+    - **useful**: Helpful for patient care AND safe/appropriate treatments
+    - **thorough**: Complete relevant info WITHOUT inappropriate additions
+    - **up_to_date**: Current guidelines AND appropriate for this patient
+    - **organized/comprehensible/succinct/synthesized/consistent**: Standard PDQI-9
+
+  • **PENALIZE HEAVILY**: 
+    - Wrong medications for the condition (e.g., antibiotics for MI)
+    - Inappropriate treatments that don't match the clinical scenario
+    - Dangerous or contraindicated interventions
+
+Step 2 – Delta  
+  • delta = score_B − score_A (range −4→+4).  
+  • overall_delta = sum of deltas (range −36→+36).
+
+Step 3 – Edit analysis  
+  • **REQUIRED**: Create a "changes" entry for EVERY dimension with a non-zero delta.  
+  • If delta ≠ 0, you MUST explain why that dimension score changed.  
+  • For each non-zero delta:  
+      – \`dimension\` name (exact PDQI-9 dimension that changed)  
+      – \`impact\` improved | worsened | neutral  
+      – \`snippet\` ≤20 words (specific text that caused the change)  
+      – \`comment\` coaching ≤25 words explaining WHY the score changed
+
+Return STRICT JSON only:
+
+{
+  "baseline_scores":    { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "student_scores":     { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "delta_scores":       { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "overall_delta": int,
+  "changes": [
+     { "dimension":str, "impact":str, "snippet":str, "comment":str }
+  ],
+
+  "global_comment": str
+}`;
+
+export async function POST(req: Request) {
+  const { id, studentNote } = await req.json();
+  const enc = db.get(id);
+  if (!enc?.aiNote) {
+    return NextResponse.json({ error: "Encounter not found" }, { status: 404 });
+  }
+  enc.studentNote = studentNote;
+
+  const transcript = clipText(enc.csv);
+  console.log("Transcript chars:", transcript.length);
+
+  const messages = [
+    {
+      role: "system" as const,
+      content: reviewPrompt,
+    },
+    {
+      role: "user" as const,
+      name: "CONTEXT",
+      content:
+        "Full encounter transcript (User & Assistant turns):\n\"\"\"\n" +
+        transcript +
+        "\n\"\"\"",
+    },
+    {
+      role: "user" as const,
+      name: "NOTE_A",
+      content: enc.aiNote,
+    },
+    {
+      role: "user" as const,
+      name: "NOTE_B",
+      content: studentNote,
+
+    },
+  ];
+
+  const res = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages,
+    temperature: 0,
+    response_format: { type: "json_object" },
+  });
+
+  const rubric = JSON.parse(res.choices[0].message.content ?? "{}");
+  enc.reviewJson = rubric;
+  return NextResponse.json(rubric);
+}
+</file>
+
 <file path="src/app/note/[id]/page.tsx">
 "use client";
-import ReactMarkdown from "react-markdown";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SOAPNote } from "@/components/ui/soap-note";
 import { toast } from "sonner";
 
 // Review component for displaying feedback
@@ -871,7 +1110,7 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="overflow-auto">
             <h2 className="mb-2 text-lg font-semibold">AI SOAP (read-only)</h2>
-            <ReactMarkdown className="prose max-w-none">{aiNote}</ReactMarkdown>
+            <SOAPNote content={aiNote} />
           </Card>
 
           <Card>
@@ -891,119 +1130,6 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
       )}
     </main>
   );
-}
-</file>
-
-<file path="src/app/api/review/route.ts">
-import { NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
-import { db } from "@/lib/store";
-import { clipText } from "@/lib/clipText";
-
-const reviewPrompt = `
-
-You are an attending physician using the **PDQI-9** rubric with emphasis on **clinical appropriateness**.
-
-Notes:
-• NOTE_A = baseline AI-generated SOAP (reference)  
-• NOTE_B = student-edited version
-
-**CRITICAL: Use the CONTEXT transcript to judge clinical appropriateness. Inappropriate treatments/medications for the actual clinical scenario should receive LOW scores (1-2).**
-
-Step 1 – Score BOTH notes (Likert 1-5 scale)
-  • **Scoring Guidelines:**
-    - **5**: Excellent, clinically appropriate, evidence-based
-    - **4**: Good, mostly appropriate with minor issues
-    - **3**: Adequate, some concerns but not harmful
-    - **2**: Poor, inappropriate for clinical scenario or potentially harmful
-    - **1**: Dangerous, contraindicated, or completely inappropriate
-
-  • **Key Dimensions with Clinical Focus:**
-    - **accurate**: Factually correct AND clinically appropriate for the case
-    - **useful**: Helpful for patient care AND safe/appropriate treatments
-    - **thorough**: Complete relevant info WITHOUT inappropriate additions
-    - **up_to_date**: Current guidelines AND appropriate for this patient
-    - **organized/comprehensible/succinct/synthesized/consistent**: Standard PDQI-9
-
-  • **PENALIZE HEAVILY**: 
-    - Wrong medications for the condition (e.g., antibiotics for MI)
-    - Inappropriate treatments that don't match the clinical scenario
-    - Dangerous or contraindicated interventions
-
-Step 2 – Delta  
-  • delta = score_B − score_A (range −4→+4).  
-  • overall_delta = sum of deltas (range −36→+36).
-
-Step 3 – Edit analysis  
-  • **REQUIRED**: Create a "changes" entry for EVERY dimension with a non-zero delta.  
-  • If delta ≠ 0, you MUST explain why that dimension score changed.  
-  • For each non-zero delta:  
-      – \`dimension\` name (exact PDQI-9 dimension that changed)  
-      – \`impact\` improved | worsened | neutral  
-      – \`snippet\` ≤20 words (specific text that caused the change)  
-      – \`comment\` coaching ≤25 words explaining WHY the score changed
-
-Return STRICT JSON only:
-
-{
-  "baseline_scores":    { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
-  "student_scores":     { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
-  "delta_scores":       { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
-  "overall_delta": int,
-  "changes": [
-     { "dimension":str, "impact":str, "snippet":str, "comment":str }
-  ],
-
-  "global_comment": str
-}`;
-
-export async function POST(req: Request) {
-  const { id, studentNote } = await req.json();
-  const enc = db.get(id);
-  if (!enc?.aiNote) {
-    return NextResponse.json({ error: "Encounter not found" }, { status: 404 });
-  }
-  enc.studentNote = studentNote;
-
-  const transcript = clipText(enc.csv);
-  console.log("Transcript chars:", transcript.length);
-
-  const messages = [
-    {
-      role: "system" as const,
-      content: reviewPrompt,
-    },
-    {
-      role: "user" as const,
-      name: "CONTEXT",
-      content:
-        "Full encounter transcript (User & Assistant turns):\n\"\"\"\n" +
-        transcript +
-        "\n\"\"\"",
-    },
-    {
-      role: "user" as const,
-      name: "NOTE_A",
-      content: enc.aiNote,
-    },
-    {
-      role: "user" as const,
-      name: "NOTE_B",
-      content: studentNote,
-
-    },
-  ];
-
-  const res = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages,
-    temperature: 0,
-    response_format: { type: "json_object" },
-  });
-
-  const rubric = JSON.parse(res.choices[0].message.content ?? "{}");
-  enc.reviewJson = rubric;
-  return NextResponse.json(rubric);
 }
 </file>
 

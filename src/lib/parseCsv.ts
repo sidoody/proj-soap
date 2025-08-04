@@ -9,9 +9,11 @@ export function csvToChat(csv: string): ChatCompletionMessageParam[] {
     .map(line => {
       const [, speaker, content] =
         line.match(/\]\s*(User|Assistant):\s*(.*)$/i) ?? [];
-      const role = speaker?.toLowerCase() === "assistant" ? "assistant" : "user";
+      const name =
+        speaker?.toLowerCase() === "assistant" ? "patient" : "clinician";
       return {
-        role: role as "user" | "assistant",
+        role: "user",
+        name,          // so GPT knows who's talking
         content: content ?? line,
       } as ChatCompletionMessageParam;
     });
