@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SOAPNote } from "@/components/ui/soap-note";
 import { toast } from "sonner";
 import { Review, ReviewChange } from "@/types";
+import Link from "next/link";
 
 // Review component for displaying feedback
 function ReviewDisplay({ review }: { review: Review }) {
@@ -166,7 +167,19 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
   }
 
   return (
-    <main className="container mx-auto max-w-6xl space-y-8 py-8 px-4 sm:px-6 lg:px-8">
+    <>
+      <nav className="bg-transparent sticky top-0 z-50">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Link href="/" className="text-xl font-black text-white tracking-tight hover:text-gray-200 transition-colors">
+                Project SOAP
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+      <main className="container mx-auto max-w-6xl space-y-8 py-8 px-4 sm:px-6 lg:px-8">
       {!aiNote ? (
         <Skeleton className="h-64 w-full" />
       ) : (
@@ -192,5 +205,6 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
         </div>
       )}
     </main>
+    </>
   );
 } 
