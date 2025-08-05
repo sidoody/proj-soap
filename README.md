@@ -8,7 +8,7 @@ Built with **Next.js**, **OpenAI GPT-4o**, and **Tailwind CSS**.
 ## How It Works
 
 ### 1. Generate SOAP Note
-- **Input**: A clinician pastes a patient encounter transcript (CSV-style or copied from an EMR simulation).
+- **Input**: Paste a full patient encounter transcript formatted as user, assistant. Be sure to include all relevant modules.
 - The app parses the dialogue into clinician/patient turns (`src/lib/parseCsv.ts`).
 - A **system prompt** (`src/lib/prompts.ts`) instructs the AI to produce a concise, markdown-formatted SOAP note.
 - The transcript + prompt are sent to the **`/api/generate`** endpoint, which calls the OpenAI API.
