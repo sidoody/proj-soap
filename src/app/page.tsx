@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SOAPNote } from "@/components/ui/soap-note";
 import { toast } from "sonner";
 import Link from "next/link";
+import { Home as HomeIcon, FileText } from "lucide-react";
 
 export default function Home() {
   const [csv, setCsv] = useState("");
@@ -152,12 +153,21 @@ Is there anything specific you'd like to do with this information?
 
   return (
     <>
-      <nav className="bg-transparent sticky top-0 z-50">
+      <nav className="bg-black/90 backdrop-blur-sm sticky top-0 z-[100]">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-xl font-black text-white tracking-tight hover:text-gray-200 transition-colors">
+              <Link href="/" className="text-xl font-black text-white tracking-tight hover:text-gray-200 transition-colors flex items-center">
+                <span className="mr-2">🧼</span>
                 Project SOAP
+              </Link>
+            </div>
+            <div className="flex items-center space-x-6">
+              <Link href="/" className="text-white hover:text-gray-200 transition-colors font-medium flex items-center">
+                <HomeIcon size={20} />
+              </Link>
+              <Link href="/documentation" className="text-white hover:text-gray-200 transition-colors flex items-center">
+                <FileText size={20} />
               </Link>
             </div>
           </div>
