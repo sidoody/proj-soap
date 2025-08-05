@@ -1,4 +1,4 @@
-# Project SOAP
+# 🧼 Project SOAP
 
 An AI-powered medical documentation tool that generates and reviews SOAP notes from patient encounter transcripts.  
 Built with **Next.js**, **OpenAI GPT-4o**, and **Tailwind CSS**.
