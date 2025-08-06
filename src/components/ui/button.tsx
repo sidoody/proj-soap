@@ -14,7 +14,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         variant === "default" &&
           "bg-yellow-400 text-black hover:bg-yellow-500 focus-visible:ring-yellow-300",
         variant === "secondary" &&
-          "bg-gray-100 hover:bg-gray-200 focus-visible:ring-gray-300",
+          "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600",
         className
       )}
       disabled={loading || props.disabled}

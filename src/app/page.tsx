@@ -176,15 +176,15 @@ Is there anything specific you'd like to do with this information?
       <main className="container mx-auto max-w-4xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
       
       <Card>
-        <h1 className="mb-4 text-xl font-semibold">Paste encounter log</h1>
-        <p className="mb-4 text-gray-600">
+        <h1 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Paste encounter log</h1>
+        <p className="mb-4 text-gray-600 dark:text-gray-400">
           Paste the complete patient interaction into the space below.
         </p>
-        <p className="text-sm font-medium text-gray-700 mb-2">Example of expected input:</p>
-        <div className="mb-4 p-3 bg-gray-50 rounded-md border-l-4 border-blue-400 relative">
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Example of expected input:</p>
+        <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border-l-4 border-blue-400 dark:border-blue-500 relative">
           <button
             onClick={handleCopyExample}
-            className="absolute top-3 right-3 p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors z-10"
+            className="absolute top-3 right-3 p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors z-10"
             title="Copy example to clipboard"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -192,10 +192,10 @@ Is there anything specific you'd like to do with this information?
             </svg>
           </button>
           <div className="relative">
-            <pre className="text-xs text-gray-600 font-mono whitespace-pre-wrap break-words overflow-y-scroll max-h-32 pr-8">
+            <pre className="text-xs text-gray-600 dark:text-gray-400 font-mono whitespace-pre-wrap break-words overflow-y-scroll max-h-32 pr-8">
 {exampleContent}
             </pre>
-            <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-gray-50 to-transparent pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-gray-50 dark:from-gray-800 to-transparent pointer-events-none"></div>
           </div>
         </div>
         <Textarea
@@ -214,10 +214,10 @@ Is there anything specific you'd like to do with this information?
 
       {aiNote && (
         <Card>
-          <h2 className="mb-2 text-lg font-semibold">AI-Generated SOAP</h2>
+          <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">AI-Generated SOAP</h2>
           <SOAPNote content={aiNote} />
           {id && (
-            <Link href={`/note/${id}`} className="mt-4 inline-block underline">
+            <Link href={`/note/${id}`} className="mt-4 inline-block underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
               Edit & Review →
             </Link>
           )}
