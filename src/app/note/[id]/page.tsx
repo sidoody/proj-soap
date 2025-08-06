@@ -26,16 +26,16 @@ function ReviewDisplay({ review }: { review: Review }) {
 
 
   const getDeltaColor = (delta: number) => {
-    if (delta >= 2) return "text-green-600 bg-green-50";
-    if (delta >= 0) return "text-yellow-600 bg-yellow-50";
+    if (delta >= 2) return "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20";
+    if (delta >= 0) return "text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20";
 
-    return "text-red-600 bg-red-50";
+    return "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20";
   };
 
   const getImpactColor = (impact: string) => {
-    if (impact === "improved") return "text-green-600 bg-green-100";
-    if (impact === "worsened") return "text-red-600 bg-red-100";
-    return "text-gray-600 bg-gray-100";
+    if (impact === "improved") return "text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30";
+    if (impact === "worsened") return "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30";
+    return "text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800";
   };
 
   // Group changes by dimension
@@ -50,12 +50,12 @@ function ReviewDisplay({ review }: { review: Review }) {
 
       {/* PDQI-9 Detailed Scoring */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-lg">PDQI-9 Detailed Scoring</h3>
+        <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">PDQI-9 Detailed Scoring</h3>
         
         {/* Score Summary Table */}
-        <div className="border rounded-lg overflow-hidden">
-          <div className="bg-gray-50 p-3 border-b">
-            <div className="grid grid-cols-4 gap-2 text-sm font-medium text-gray-700">
+        <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="bg-gray-50 dark:bg-gray-800 p-3 border-b border-gray-200 dark:border-gray-700">
+            <div className="grid grid-cols-4 gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               <div>Dimension</div>
               <div className="text-center">Baseline</div>
               <div className="text-center">Student</div>
@@ -69,12 +69,12 @@ function ReviewDisplay({ review }: { review: Review }) {
             const deltaScore = review.delta_scores?.[key] || 0;
             
             return (
-              <div key={key} className="p-3 border-b border-gray-100 last:border-b-0">
+              <div key={key} className="p-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0 bg-white dark:bg-gray-900">
                 <div className="grid grid-cols-4 gap-2 text-sm">
-                  <div className="font-medium">{name}</div>
-                  <div className="text-center text-gray-600">{baselineScore}/5</div>
-                  <div className="text-center text-gray-600">{studentScore}/5</div>
-                  <div className={`text-center font-semibold ${getDeltaColor(deltaScore)}`}>
+                  <div className="font-medium text-gray-900 dark:text-gray-100">{name}</div>
+                  <div className="text-center text-gray-600 dark:text-gray-400">{baselineScore}/5</div>
+                  <div className="text-center text-gray-600 dark:text-gray-400">{studentScore}/5</div>
+                  <div className={`text-center font-semibold px-2 py-1 rounded ${getDeltaColor(deltaScore)}`}>
                     {deltaScore > 0 ? '+' : ''}{deltaScore}
                   </div>
                 </div>
@@ -91,9 +91,9 @@ function ReviewDisplay({ review }: { review: Review }) {
           if (dimensionChanges.length === 0) return null;
           
           return (
-            <div key={key} className={`border rounded-lg p-4 ${getDeltaColor(deltaScore)}`}>
+            <div key={key} className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 ${getDeltaColor(deltaScore)}`}>
               <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium">{name}</h4>
+                <h4 className="font-medium text-gray-900 dark:text-gray-100">{name}</h4>
                 <span className="font-semibold text-lg">
                   {deltaScore > 0 ? '+' : ''}{deltaScore}
                 </span>
@@ -102,16 +102,16 @@ function ReviewDisplay({ review }: { review: Review }) {
               {/* Changes for this dimension */}
               <div className="space-y-2">
                 {dimensionChanges.map((change: ReviewChange, index: number) => (
-                  <div key={index} className="bg-white bg-opacity-50 rounded p-3 border-l-4 border-gray-300">
+                  <div key={index} className="bg-white dark:bg-gray-800/50 bg-opacity-50 rounded p-3 border-l-4 border-gray-300 dark:border-gray-600">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`font-medium text-sm px-2 py-1 rounded ${getImpactColor(change.impact)}`}>
                         {change.impact}
                       </span>
-                      <span className="text-xs text-gray-600 font-mono bg-gray-100 px-2 py-1 rounded">
+                      <span className="text-xs text-gray-600 dark:text-gray-400 font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
                         &quot;{change.snippet}&quot;
                       </span>
                     </div>
-                    <p className="text-sm text-gray-700">{change.comment}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">{change.comment}</p>
                   </div>
                 ))}
               </div>
@@ -122,9 +122,9 @@ function ReviewDisplay({ review }: { review: Review }) {
 
       {/* Global Comment */}
       {review.global_comment && (
-        <div className="border rounded-lg p-4 bg-blue-50">
-          <h3 className="font-semibold text-lg mb-2">Overall Feedback</h3>
-          <p className="text-gray-700">{review.global_comment}</p>
+        <div className="border border-blue-200 dark:border-blue-700 rounded-lg p-4 bg-blue-50 dark:bg-blue-900/20">
+          <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">Overall Feedback</h3>
+          <p className="text-gray-700 dark:text-gray-300">{review.global_comment}</p>
         </div>
       )}
     </div>
@@ -195,12 +195,12 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="overflow-auto">
-            <h2 className="mb-2 text-lg font-semibold">AI SOAP (read-only)</h2>
+            <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">AI SOAP (read-only)</h2>
             <SOAPNote content={aiNote} />
           </Card>
 
           <Card>
-            <h2 className="mb-2 text-lg font-semibold">Your SOAP (edit)</h2>
+            <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">Your SOAP (edit)</h2>
             <Textarea
               rows={18}
               value={student}

@@ -29,43 +29,43 @@ export default function Documentation() {
       <main className="container mx-auto max-w-6xl space-y-8 py-12 px-4 sm:px-6 lg:px-8">
         <Card>
           <div className="max-w-none">
-            <h2 className="text-3xl font-bold mb-8 text-gray-900">How It Works</h2>
+            <h2 className="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100">How It Works</h2>
             
                          <div className="space-y-10">
                <div>
-                 <h3 className="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
-                   <span className="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold mr-3">1</span>
+                 <h3 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200 flex items-center">
+                   <span className="bg-gray-600 dark:bg-gray-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold mr-3">1</span>
                    Generate SOAP Note
                  </h3>
                  <div className="ml-11 space-y-4">
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700"><strong>Input</strong>: Paste a full patient encounter transcript formatted as user, assistant. Be sure to include all relevant modules.</p>
+                       <p className="text-gray-700 dark:text-gray-300"><strong>Input</strong>: Paste a full patient encounter transcript formatted as user, assistant. Be sure to include all relevant modules.</p>
                      </div>
                    </div>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">The app parses the dialogue into clinician/patient turns using <code className="text-sm bg-gray-100 px-2 py-1 rounded font-mono">src/lib/parseCsv.ts</code>.</p>
+                       <p className="text-gray-700 dark:text-gray-300">The app parses the dialogue into clinician/patient turns using <code className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded font-mono">src/lib/parseCsv.ts</code>.</p>
                      </div>
                    </div>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">A <strong>system prompt</strong> (<code className="text-sm bg-gray-100 px-2 py-1 rounded font-mono">src/lib/prompts.ts</code>) instructs the AI to produce a concise, markdown-formatted SOAP note.</p>
+                       <p className="text-gray-700 dark:text-gray-300">A <strong>system prompt</strong> (<code className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded font-mono">src/lib/prompts.ts</code>) instructs the AI to produce a concise, markdown-formatted SOAP note.</p>
                      </div>
                    </div>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">The transcript + prompt are sent to the <strong><code className="text-sm bg-gray-100 px-2 py-1 rounded font-mono">/api/generate</code></strong> endpoint, which calls the OpenAI API.</p>
+                       <p className="text-gray-700 dark:text-gray-300">The transcript + prompt are sent to the <strong><code className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded font-mono">/api/generate</code></strong> endpoint, which calls the OpenAI API.</p>
                      </div>
                    </div>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">The AI-generated SOAP note is stored in memory (<code className="text-sm bg-gray-100 px-2 py-1 rounded font-mono">src/lib/store.ts</code>) and displayed to the user.</p>
+                       <p className="text-gray-700 dark:text-gray-300">The AI-generated SOAP note is stored in memory (<code className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded font-mono">src/lib/store.ts</code>) and displayed to the user.</p>
                      </div>
                    </div>
                  </div>
@@ -73,17 +73,17 @@ export default function Documentation() {
                  {/* Expandable code block for prompts.ts */}
                  <div className="ml-11 mt-6">
                    <details className="group">
-                     <summary className="cursor-pointer text-base font-semibold text-gray-800 hover:text-gray-900 transition-colors flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-100">
+                     <summary className="cursor-pointer text-base font-semibold text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
                        <span className="mr-3 text-lg">▶</span>
                        <span className="group-open:hidden">Show SOAP generation prompt</span>
                        <span className="hidden group-open:inline">Hide SOAP generation prompt</span>
                      </summary>
-                     <div className="mt-3 border border-gray-200 rounded-lg overflow-hidden">
-                       <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
-                         <p className="text-xs font-mono text-gray-600">src/lib/prompts.ts</p>
+                     <div className="mt-3 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                       <div className="bg-gray-50 dark:bg-gray-800 px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                         <p className="text-xs font-mono text-gray-600 dark:text-gray-400">src/lib/prompts.ts</p>
                        </div>
                        <div className="max-h-80 overflow-y-auto">
-                         <pre className="text-xs font-mono text-gray-800 p-4 whitespace-pre-wrap">{`export const systemSOAP = \`
+                         <pre className="text-xs font-mono text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 p-4 whitespace-pre-wrap">{`export const systemSOAP = \`
 You are a meticulous medical scribe. From the **patient's statements _and_ all actions ALREADY performed in this encounter** (ignore clinician questions), craft a concise **markdown** SOAP note.
 
 ## S – Subjective
@@ -128,71 +128,71 @@ Use "—" if nothing remains.
                </div>
 
                <div>
-                 <h3 className="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
-                   <span className="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold mr-3">2</span>
+                 <h3 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200 flex items-center">
+                   <span className="bg-gray-600 dark:bg-gray-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold mr-3">2</span>
                    Edit & Submit
                  </h3>
                  <div className="ml-11 space-y-4">
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">Users can click <strong>&quot;Edit &amp; Review&quot;</strong> to refine the SOAP note.</p>
+                       <p className="text-gray-700 dark:text-gray-300">Users can click <strong>&quot;Edit &amp; Review&quot;</strong> to refine the SOAP note.</p>
                      </div>
                    </div>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">Their edits are saved as the <strong>student note</strong> for the encounter.</p>
+                       <p className="text-gray-700 dark:text-gray-300">Their edits are saved as the <strong>student note</strong> for the encounter.</p>
                      </div>
                    </div>
                  </div>
                </div>
 
                <div>
-                 <h3 className="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
-                   <span className="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold mr-3">3</span>
+                 <h3 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200 flex items-center">
+                   <span className="bg-gray-600 dark:bg-gray-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold mr-3">3</span>
                    AI Review & Grading
                  </h3>
                  <div className="ml-11 space-y-4">
-                   <p className="text-gray-700 mb-4">On submission, the <strong><code className="text-sm bg-gray-100 px-2 py-1 rounded font-mono">/api/review</code></strong> endpoint:</p>
+                   <p className="text-gray-700 dark:text-gray-300 mb-4">On submission, the <strong><code className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded font-mono">/api/review</code></strong> endpoint:</p>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">Retrieves the original AI note and the student-edited note.</p>
+                       <p className="text-gray-700 dark:text-gray-300">Retrieves the original AI note and the student-edited note.</p>
                      </div>
                    </div>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">Uses a <strong>PDQI-9 scoring rubric</strong> with clinical appropriateness rules (<code className="text-sm bg-gray-100 px-2 py-1 rounded font-mono">src/app/api/review/route.ts</code>).</p>
+                       <p className="text-gray-700 dark:text-gray-300">Uses a <strong>PDQI-9 scoring rubric</strong> with clinical appropriateness rules (<code className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded font-mono">src/app/api/review/route.ts</code>).</p>
                      </div>
                    </div>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">Compares both notes against the encounter transcript.</p>
+                       <p className="text-gray-700 dark:text-gray-300">Compares both notes against the encounter transcript.</p>
                      </div>
                    </div>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700 mb-2">Returns JSON with:</p>
+                       <p className="text-gray-700 dark:text-gray-300 mb-2">Returns JSON with:</p>
                        <div className="ml-6 space-y-2">
                          <div className="flex items-start space-x-3">
-                           <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2.5 flex-shrink-0"></div>
-                           <p className="text-gray-600"><strong>Scores</strong> for each PDQI-9 dimension</p>
+                           <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full mt-2.5 flex-shrink-0"></div>
+                           <p className="text-gray-600 dark:text-gray-400"><strong>Scores</strong> for each PDQI-9 dimension</p>
                          </div>
                          <div className="flex items-start space-x-3">
-                           <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2.5 flex-shrink-0"></div>
-                           <p className="text-gray-600"><strong>Delta scores</strong> (student vs. AI)</p>
+                           <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full mt-2.5 flex-shrink-0"></div>
+                           <p className="text-gray-600 dark:text-gray-400"><strong>Delta scores</strong> (student vs. AI)</p>
                          </div>
                          <div className="flex items-start space-x-3">
-                           <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2.5 flex-shrink-0"></div>
-                           <p className="text-gray-600"><strong>Per-dimension change comments</strong></p>
+                           <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full mt-2.5 flex-shrink-0"></div>
+                           <p className="text-gray-600 dark:text-gray-400"><strong>Per-dimension change comments</strong></p>
                          </div>
                          <div className="flex items-start space-x-3">
-                           <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2.5 flex-shrink-0"></div>
-                           <p className="text-gray-600"><strong>Overall feedback</strong></p>
+                           <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full mt-2.5 flex-shrink-0"></div>
+                           <p className="text-gray-600 dark:text-gray-400"><strong>Overall feedback</strong></p>
                          </div>
                        </div>
                      </div>
@@ -202,17 +202,17 @@ Use "—" if nothing remains.
                  {/* Expandable code block for review route */}
                  <div className="ml-11 mt-6">
                    <details className="group">
-                     <summary className="cursor-pointer text-base font-semibold text-gray-800 hover:text-gray-900 transition-colors flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-100">
+                     <summary className="cursor-pointer text-base font-semibold text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 transition-colors flex items-center bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
                        <span className="mr-3 text-lg">▶</span>
                        <span className="group-open:hidden">Show AI review & grading code</span>
                        <span className="hidden group-open:inline">Hide AI review & grading code</span>
                      </summary>
-                     <div className="mt-3 border border-gray-200 rounded-lg overflow-hidden">
-                       <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
-                         <p className="text-xs font-mono text-gray-600">src/app/api/review/route.ts</p>
+                     <div className="mt-3 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                       <div className="bg-gray-50 dark:bg-gray-800 px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                         <p className="text-xs font-mono text-gray-600 dark:text-gray-400">src/app/api/review/route.ts</p>
                        </div>
                        <div className="max-h-80 overflow-y-auto">
-                         <pre className="text-xs font-mono text-gray-800 p-4 whitespace-pre-wrap">{`import { NextResponse } from "next/server";
+                         <pre className="text-xs font-mono text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 p-4 whitespace-pre-wrap">{`import { NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 import { db } from "@/lib/store";
 import { clipText } from "@/lib/clipText";
@@ -329,28 +329,28 @@ export async function POST(req: Request) {
                </div>
 
                <div>
-                 <h3 className="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
-                   <span className="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold mr-3">4</span>
+                 <h3 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200 flex items-center">
+                   <span className="bg-gray-600 dark:bg-gray-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold mr-3">4</span>
                    Feedback Display
                  </h3>
                  <div className="ml-11 space-y-4">
-                   <p className="text-gray-700 mb-4">The UI presents a detailed breakdown:</p>
+                   <p className="text-gray-700 dark:text-gray-300 mb-4">The UI presents a detailed breakdown:</p>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">Scores and deltas per dimension</p>
+                       <p className="text-gray-700 dark:text-gray-300">Scores and deltas per dimension</p>
                      </div>
                    </div>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">Specific snippets causing score changes</p>
+                       <p className="text-gray-700 dark:text-gray-300">Specific snippets causing score changes</p>
                      </div>
                    </div>
                    <div className="flex items-start space-x-3">
-                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                     <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
                      <div>
-                       <p className="text-gray-700">Global comments for improvement</p>
+                       <p className="text-gray-700 dark:text-gray-300">Global comments for improvement</p>
                      </div>
                    </div>
                  </div>

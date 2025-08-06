@@ -3,6 +3,18 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-background: #ffffff;
+  --card-foreground: #171717;
+  --border: #e5e7eb;
+  --input-border: #d1d5db;
+  --muted: #f9fafb;
+  --muted-foreground: #6b7280;
+  --accent: #f3f4f6;
+  --accent-foreground: #1f2937;
+  --primary: #1f2937;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #1f2937;
 }
 
 @theme inline {
@@ -15,6 +27,18 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --card-background: #1a1a1a;
+    --card-foreground: #ededed;
+    --border: #374151;
+    --input-border: #4b5563;
+    --muted: #111827;
+    --muted-foreground: #9ca3af;
+    --accent: #1f2937;
+    --accent-foreground: #f3f4f6;
+    --primary: #f3f4f6;
+    --primary-foreground: #1f2937;
+    --secondary: #374151;
+    --secondary-foreground: #f3f4f6;
   }
 }
 
@@ -23,6 +47,12 @@ body {
   color: var(--foreground);
   font-family: var(--font-manrope), system-ui, sans-serif;
   min-height: 100vh;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  }
 }
 
 /* Enhanced SOAP Note Formatting */
