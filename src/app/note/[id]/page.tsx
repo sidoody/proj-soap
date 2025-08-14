@@ -439,14 +439,14 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
             <div className="mt-4 space-y-4">
               {/* Rubric Dropdown */}
               <div className="flex items-center gap-4">
-                <label htmlFor="rubric-select" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor="rubric-select" className="text-sm font-medium text-gray-700 dark:text-gray-300 flex-shrink-0">
                   Grading Rubric:
                 </label>
                 <select
                   id="rubric-select"
                   value={selectedRubricKey}
                   onChange={(e) => setSelectedRubricKey(e.target.value as RubricKey)}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex-1 min-w-0 max-w-xs truncate"
                 >
                   {Object.entries(RUBRIC_REGISTRY).map(([key, rubric]) => (
                     <option key={key} value={key}>
@@ -473,7 +473,7 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
               {review && 'schema_version' in review && (
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   <span className="inline-block bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs font-medium">
-                    Graded with {review.schema_version === "pdqi9_v1" ? "PDQI-9" : "SOAP (NO KILLER ITEMS)"}
+                                         Graded with {review.schema_version === "pdqi9_v1" ? "PDQI-9" : "COMLEX Oral Presentation Rating Draft Rubric"}
                   </span>
                 </div>
               )}

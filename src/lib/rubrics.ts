@@ -21,7 +21,7 @@ export const RUBRIC_REGISTRY: Record<RubricKey, RubricDefinition> = {
     key: "soap_v1", 
     schema_version: "soap_rubric_v1", 
     prompt: soapRubricPrompt,
-    name: "SOAP (NO KILLER ITEMS)"
+    name: "COMLEX Oral Presentation Rating Draft Rubric"
   },
 };
 

@@ -20,13 +20,13 @@ export default function Documentation() {
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Overview</h2>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               Project SOAP helps medical students and professionals generate, edit, and receive feedback on SOAP notes. 
-              The system supports multiple grading rubrics including PDQI-9 and SOAP (NO KILLER ITEMS) standards.
+                             The system supports multiple grading rubrics including PDQI-9 and COMLEX Oral Presentation Rating standards.
             </p>
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
               <h3 className="font-medium text-blue-900 dark:text-blue-200 mb-2">Key Features</h3>
               <ul className="text-blue-800 dark:text-blue-300 space-y-1 text-sm">
                 <li>• AI-generated SOAP notes from patient encounter transcripts</li>
-                <li>• Multiple grading rubrics (PDQI-9, SOAP rubric)</li>
+                                 <li>• Multiple grading rubrics (PDQI-9, COMLEX rubric)</li>
                 <li>• Rubric-specific custom grading prompts</li>
                 <li>• Detailed feedback with scoring and improvement suggestions</li>
                 <li>• Dark/light mode support</li>
@@ -72,7 +72,7 @@ export default function Documentation() {
                 </p>
                 <ul className="text-gray-600 dark:text-gray-400 space-y-2 text-sm ml-4">
                   <li><strong>PDQI-9:</strong> Traditional 9-dimension quality rubric (5-point scale)</li>
-                  <li><strong>SOAP (NO KILLER ITEMS):</strong> Section-based rubric focused on S/O/A/P quality (6-point scale)</li>
+                                     <li><strong>COMLEX Oral Presentation Rating Draft Rubric:</strong> Section-based rubric focused on S/O/A/P quality (6-point scale)</li>
                 </ul>
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded text-sm mt-3">
                   <strong>Note:</strong> Your rubric choice is saved per encounter. You can switch rubrics and maintain separate custom prompts for each.
@@ -132,7 +132,7 @@ export default function Documentation() {
 
               {/* SOAP Rubric */}
               <div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">SOAP Rubric (NO KILLER ITEMS)</h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">COMLEX Oral Presentation Rating Draft Rubric</h3>
                 <p className="text-gray-700 dark:text-gray-300 mb-3">
                   A section-specific rubric evaluating each SOAP component using a 6-point scale with emphasis on osteopathic principles.
                 </p>
@@ -170,13 +170,13 @@ export default function Documentation() {
               <li>• Emphasize specific clinical areas or specialties</li>
               <li>• Add institution-specific requirements</li>
               <li>• Modify scoring criteria for different learning objectives</li>
-              <li>• Maintain separate customizations for PDQI-9 vs SOAP rubrics</li>
+                             <li>• Maintain separate customizations for PDQI-9 vs COMLEX rubrics</li>
             </ul>
             
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
               <h3 className="font-medium text-blue-900 dark:text-blue-200 mb-2">How it Works</h3>
               <ol className="text-blue-800 dark:text-blue-300 space-y-1 text-sm">
-                <li>1. Select your rubric (PDQI-9 or SOAP)</li>
+                                 <li>1. Select your rubric (PDQI-9 or COMLEX)</li>
                                  <li>2. Click &quot;Edit grading prompt&quot; to modify the instructions</li>
                 <li>3. Save your changes (limited to 12,000 characters)</li>
                 <li>4. Your custom prompt applies only to that rubric for this encounter</li>
@@ -204,7 +204,7 @@ export default function Documentation() {
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900 dark:text-white mb-2">SOAP Scale (1-6)</h4>
+                                         <h4 className="font-medium text-gray-900 dark:text-white mb-2">COMLEX Scale (1-6)</h4>
                     <ul className="text-gray-600 dark:text-gray-400 space-y-1">
                       <li>• 5-6: Above average, comprehensive</li>
                       <li>• 3-4: Average, sufficient</li>
@@ -286,7 +286,7 @@ export default function Documentation() {
                   <li>• Focus on clinical accuracy and appropriateness</li>
                   <li>• Add missing differential diagnoses</li>
                   <li>• Improve organization and flow</li>
-                  <li>• Include relevant osteopathic findings (for SOAP rubric)</li>
+                                     <li>• Include relevant osteopathic findings (for COMLEX rubric)</li>
                 </ul>
               </div>
             </div>
