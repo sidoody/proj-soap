@@ -1,0 +1,29 @@
+{
+  "schema_version": "soap_rubric_v1",
+  "baseline_scores": {
+    "subjective": 3,
+    "objective": 2,
+    "assessment": 3
+  },
+  "student_scores": {
+    "subjective": 4,
+    "objective": 3,
+    "assessment": 4,
+    "plan": 5
+  },
+  "delta_scores": {
+    "subjective": 1,
+    "objective": 1,
+    "assessment": 1,
+    "plan": 2
+  },
+  "overall_delta": 5,
+  "changes": [
+    {
+      "section": "subjective",
+      "impact": "improved",
+      "snippet": "Added detailed pain quality description"
+    }
+  ],
+  "global_comment": "Sample invalid response for testing validation - missing plan in baseline_scores, missing comment in changes, missing rationale field"
+} 

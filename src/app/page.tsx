@@ -127,7 +127,7 @@ Is there anything specific you'd like to do with this information?
     try {
       await navigator.clipboard.writeText(exampleContent);
       toast.success("Example copied to clipboard!");
-    } catch (err) {
+    } catch {
       toast.error("Failed to copy to clipboard");
     }
   };
