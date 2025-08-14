@@ -326,6 +326,31 @@ export async function POST(req: Request) {
                      </div>
                    </details>
                  </div>
+                 
+                 {/* Custom grading prompt subsection */}
+                 <div className="ml-11 mt-6">
+                   <h4 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Custom Grading Prompts</h4>
+                   <div className="space-y-3">
+                     <div className="flex items-start space-x-3">
+                       <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
+                       <div>
+                         <p className="text-gray-700 dark:text-gray-300">You can open <strong>Edit grading prompt</strong> on the note page to customize how your SOAP notes are evaluated.</p>
+                       </div>
+                     </div>
+                     <div className="flex items-start space-x-3">
+                       <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
+                       <div>
+                         <p className="text-gray-700 dark:text-gray-300">Custom prompts are saved per encounter and persist during your session. Use <strong>Reset to default</strong> to return to the standard PDQI-9 rubric.</p>
+                       </div>
+                     </div>
+                     <div className="flex items-start space-x-3">
+                       <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
+                       <div>
+                         <p className="text-gray-700 dark:text-gray-300">The default rubric focuses on <strong>PDQI-9 clinical appropriateness</strong>, emphasizing safe and evidence-based care that matches the patient encounter.</p>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
                </div>
 
                <div>

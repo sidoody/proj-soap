@@ -137,18 +137,73 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
   const [student, setStudent] = useState("");
   const [review, setReview] = useState<Review | null>(null);
   const [saving, setSaving] = useState(false);
+  
+  // Grading prompt state
+  const [gradingPrompt, setGradingPrompt] = useState("");
+  const [gradingPromptOpen, setGradingPromptOpen] = useState(false);
+  const [savingPrompt, setSavingPrompt] = useState(false);
+  const [defaultPrompt, setDefaultPrompt] = useState("");
 
   // fetch encounter once
   useEffect(() => {
-    fetch(`/api/debug?id=${id}`)
-      .then((r) => r.ok ? r.json() : Promise.reject("Not found"))
-      .then((d) => {
-        setAiNote(d.aiNote);
-        setStudent(d.studentNote ?? d.aiNote);
-        setReview(d.reviewJson ?? null);
+    Promise.all([
+      fetch(`/api/debug?id=${id}`).then((r) => r.ok ? r.json() : Promise.reject("Not found")),
+      fetch(`/api/review-prompt?id=${id}`).then((r) => r.ok ? r.json() : Promise.reject("Prompt not found"))
+    ])
+      .then(([encounterData, promptData]) => {
+        setAiNote(encounterData.aiNote);
+        setStudent(encounterData.studentNote ?? encounterData.aiNote);
+        setReview(encounterData.reviewJson ?? null);
+        
+        setDefaultPrompt(promptData.defaultPrompt);
+        setGradingPrompt(promptData.prompt ?? promptData.defaultPrompt);
       })
       .catch(() => toast.error("Encounter not found"));
   }, [id]);
+
+  async function handleSavePrompt() {
+    try {
+      setSavingPrompt(true);
+      const r = await fetch("/api/review-prompt", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, prompt: gradingPrompt }),
+      });
+      if (!r.ok) {
+        const error = await r.json();
+        throw new Error(error.error || "Save failed");
+      }
+      toast.success("Grading prompt saved");
+      setGradingPromptOpen(false);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSavingPrompt(false);
+    }
+  }
+
+  async function handleResetPrompt() {
+    if (!confirm("This will discard your custom grading prompt for this note.")) {
+      return;
+    }
+    
+    try {
+      setSavingPrompt(true);
+      const r = await fetch("/api/review-prompt", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (!r.ok) throw new Error("Reset failed");
+      
+      setGradingPrompt(defaultPrompt);
+      toast.success("Reset to default grading prompt");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSavingPrompt(false);
+    }
+  }
 
   async function handleSubmit() {
     try {
@@ -206,9 +261,81 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
               value={student}
               onChange={(e) => setStudent(e.target.value)}
             />
-            <Button loading={saving} className="mt-4" onClick={handleSubmit}>
-              Submit for Review
-            </Button>
+            <div className="mt-4 flex gap-2">
+              <Button loading={saving} onClick={handleSubmit}>
+                Submit for Review
+              </Button>
+              <Button 
+                variant="secondary" 
+                onClick={() => setGradingPromptOpen(true)}
+              >
+                Edit grading prompt
+              </Button>
+            </div>
+
+            {/* Grading Prompt Editor */}
+            {gradingPromptOpen && (
+              <div className="mt-6 border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                <h3 className="font-semibold text-lg mb-3 text-gray-900 dark:text-gray-100">
+                  Edit Grading Prompt
+                </h3>
+                <div className="space-y-3">
+                  <Textarea
+                    rows={18}
+                    value={gradingPrompt}
+                    onChange={(e) => setGradingPrompt(e.target.value)}
+                    className="font-mono text-sm"
+                  />
+                  
+                  {/* Helper text and character count */}
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      This prompt guides grading only. It does not change your SOAP text.
+                    </p>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Characters: {gradingPrompt.length} / 12,000
+                        {gradingPrompt.length > 0 && (
+                          <span className="ml-2">
+                            (≈{Math.ceil(gradingPrompt.length / 4)} tokens)
+                          </span>
+                        )}
+                      </span>
+                      {gradingPrompt.length > 12000 && (
+                        <span className="text-red-600 dark:text-red-400 font-medium">
+                          Exceeds limit!
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Action buttons */}
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      loading={savingPrompt}
+                      onClick={handleSavePrompt}
+                      disabled={gradingPrompt.length > 12000}
+                    >
+                      Save
+                    </Button>
+                    <Button 
+                      variant="secondary"
+                      onClick={handleResetPrompt}
+                      disabled={savingPrompt}
+                    >
+                      Reset to default
+                    </Button>
+                    <Button 
+                      variant="secondary"
+                      onClick={() => setGradingPromptOpen(false)}
+                      disabled={savingPrompt}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {review && <ReviewDisplay review={review} />}
           </Card>
