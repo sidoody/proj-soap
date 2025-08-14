@@ -8,6 +8,8 @@ export interface Encounter {
   studentNote?: string;
   reviewJson?: Review;
   createdAt: Date;
+  reviewPrompt?: string;
+  reviewPromptEditedAt?: Date;
 }
 
 // Use a single Map instance attached to globalThis
