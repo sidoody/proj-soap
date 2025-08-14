@@ -44,6 +44,10 @@ The content is organized as follows:
 </file_summary>
 
 <directory_structure>
+fixtures/
+  reviews/
+    soap_rubric_v1_invalid.json
+    soap_rubric_v1_valid.json
 public/
   file.svg
   globe.svg
@@ -58,6 +62,8 @@ src/
       generate/
         route.ts
       review/
+        route.ts
+      review-prompt/
         route.ts
     documentation/
       page.tsx
@@ -79,6 +85,8 @@ src/
     openai.ts
     parseCsv.ts
     prompts.ts
+    reviewPrompt.ts
+    reviewPromptSoap.ts
     store.ts
     utils.ts
   types/
@@ -95,6 +103,151 @@ tsconfig.json
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="fixtures/reviews/soap_rubric_v1_invalid.json">
+{
+  "schema_version": "soap_rubric_v1",
+  "baseline_scores": {
+    "subjective": 3,
+    "objective": 2,
+    "assessment": 3
+  },
+  "student_scores": {
+    "subjective": 4,
+    "objective": 3,
+    "assessment": 4,
+    "plan": 5
+  },
+  "delta_scores": {
+    "subjective": 1,
+    "objective": 1,
+    "assessment": 1,
+    "plan": 2
+  },
+  "overall_delta": 5,
+  "changes": [
+    {
+      "section": "subjective",
+      "impact": "improved",
+      "snippet": "Added detailed pain quality description"
+    }
+  ],
+  "global_comment": "Sample invalid response for testing validation - missing plan in baseline_scores, missing comment in changes, missing rationale field"
+}
+</file>
+
+<file path="fixtures/reviews/soap_rubric_v1_valid.json">
+{
+  "schema_version": "soap_rubric_v1",
+  "baseline_scores": {
+    "subjective": 3,
+    "objective": 2,
+    "assessment": 3,
+    "plan": 3
+  },
+  "student_scores": {
+    "subjective": 4,
+    "objective": 3,
+    "assessment": 4,
+    "plan": 5
+  },
+  "delta_scores": {
+    "subjective": 1,
+    "objective": 1,
+    "assessment": 1,
+    "plan": 2
+  },
+  "overall_delta": 5,
+  "changes": [
+    {
+      "section": "subjective",
+      "impact": "improved",
+      "snippet": "Added detailed pain quality description",
+      "comment": "Better characterization enhances clinical picture"
+    },
+    {
+      "section": "objective",
+      "impact": "improved", 
+      "snippet": "Included palpatory findings",
+      "comment": "OMM findings support differential diagnosis"
+    },
+    {
+      "section": "assessment",
+      "impact": "improved",
+      "snippet": "Ranked differential appropriately",
+      "comment": "Logical prioritization based on findings"
+    },
+    {
+      "section": "plan",
+      "impact": "improved",
+      "snippet": "Added OMT and lifestyle counseling",
+      "comment": "Comprehensive osteopathic approach to treatment"
+    }
+  ],
+  "rationale": {
+    "subjective": "Improved organization and added relevant detail to HPI. ROS includes pertinent negatives.",
+    "objective": "Enhanced with structured exam findings and palpatory assessment consistent with chief complaint.",
+    "assessment": "Clear differential ranking with appropriate consideration of clinical findings.",
+    "plan": "Comprehensive plan integrating conventional and osteopathic treatments with clear disposition."
+  },
+  "global_comment": "Excellent improvement showing stronger clinical reasoning and integration of osteopathic principles. Continue developing systematic approach to complex cases."
+}
+</file>
+
+<file path="src/lib/reviewPromptSoap.ts">
+export const defaultSoapRubricPrompt = `
+ROLE: You are an attending physician. Grade SOAP notes using the attached SOAP rubric (NO KILLER ITEMS). 
+We compare two notes:
+• NOTE_A = baseline AI SOAP
+• NOTE_B = student-edited SOAP
+• CONTEXT = encounter transcript; use it to judge appropriateness.
+
+SCALE: 1–6 per section (Subjective, Objective, Assessment, Plan).
+General rules:
+• Score **1** if the section is missing.
+• Penalize incorrect, unsafe, or irrelevant content.
+• Reward accuracy, organization, pertinence, osteopathic principles (OMM/palpatory findings, viscerosomatic/somatovisceral reflexes), and linkage to CC.
+
+RUBRIC (condensed from image):
+SUBJECTIVE
+- Below Avg (1–2): Omits key history; irrelevant or incorrect details; missing or unrelated ROS; disorganized.
+- Average (3–4): Enough correct detail for assessment/plan; may miss some HPI/PMH/Fam/Soc; pertinent ROS of primary system.
+- Above Avg (5–6): Accurate, complete, concise; clear CC/HPI (OPQRST where relevant); identifies patient concerns; pertinent ROS of primary + associated systems.
+
+OBJECTIVE
+- Below Avg (1–2): Omits key findings; implausible/inaccurate data; missing diagnostics; omits palpatory/OMM.
+- Average (3–4): Sufficient for assessment/plan; includes VS/general description; some diagnostics; exam of pertinent primary system; basic palpatory/OMM as appropriate.
+- Above Avg (5–6): Accurate, detailed, comprehensive across primary + associated systems; clear positives/negatives; detailed diagnostics; detailed palpatory/OMM; considers viscerosomatic/somatovisceral reflexes.
+
+ASSESSMENT
+- Below Avg (1–2): Inconsistent/unsupported impression or DDX; wrong rank order; just symptoms/old dx; not supported by palpatory/OMM; unclear rationale.
+- Average (3–4): Reasonable and supported by S&O; ≥3 DDX (or risk/problem list for well visit); mostly correct rank order; partially supported by palpatory/OMM.
+- Above Avg (5–6): Accurate, comprehensive, linked to S&O; DDX clearly appropriate with correct ranking; fully supported by palpatory/OMM.
+
+PLAN
+- Below Avg (1–2): Dangerous/contraindicated/unrealistic; non-indicated tests/referrals; not linked to S&O/A; omits lifestyle/OMT/meds/counseling where applicable; poor disposition/follow-up.
+- Average (3–4): Reasonable and connected to history/findings/assessment; may miss details; includes some lifestyle/OMT/meds/counseling; considers osteopathic principles; mostly appropriate disposition/follow-up.
+- Above Avg (5–6): Addresses immediate concerns; appropriate diagnostics; therapeutic plan integrates lifestyle/OMT/meds/counseling; integrates osteopathic principles/person-centered aspects; clear disposition/follow-up.
+
+TASKS:
+1) Score NOTE_A and NOTE_B per section (1–6).
+2) Compute delta = NOTE_B − NOTE_A per section; overall_delta = sum of deltas.
+3) For each section where delta ≠ 0, add a change item with: section, impact (improved|worsened|neutral), snippet ≤20 words from NOTE_B that drove the change, and a ≤25-word coaching comment.
+4) Provide 1–2 sentence rationale for each section, and a concise global_comment for the student.
+
+Return STRICT JSON matching this schema (no prose):
+{
+  "schema_version":"soap_rubric_v1",
+  "baseline_scores":{"subjective":int,"objective":int,"assessment":int,"plan":int},
+  "student_scores":{"subjective":int,"objective":int,"assessment":int,"plan":int},
+  "delta_scores":{"subjective":int,"objective":int,"assessment":int,"plan":int},
+  "overall_delta":int,
+  "changes":[{"section":str,"impact":str,"snippet":str,"comment":str}],
+  "rationale":{"subjective":str,"objective":str,"assessment":str,"plan":str},
+  "global_comment":str
+}
+`;
+</file>
 
 <file path="public/file.svg">
 <svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
@@ -155,6 +308,95 @@ export async function POST(req: Request) {
   db.get(enc.id)!.aiNote = note;
 
   return NextResponse.json({ id: enc.id, aiNote: note });
+}
+</file>
+
+<file path="src/app/api/review-prompt/route.ts">
+import { NextResponse } from "next/server";
+import { db } from "@/lib/store";
+import { defaultReviewPrompt } from "@/lib/reviewPrompt";
+
+// GET: ?id=<encId> → { id, prompt: string | null, defaultPrompt: string }
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id");
+  
+  if (!id) {
+    return NextResponse.json({ error: "Missing id parameter" }, { status: 400 });
+  }
+  
+  const enc = db.get(id);
+  if (!enc) {
+    return NextResponse.json({ error: "Encounter not found" }, { status: 404 });
+  }
+  
+  return NextResponse.json({
+    id,
+    prompt: enc.reviewPrompt ?? null,
+    defaultPrompt: defaultReviewPrompt
+  });
+}
+
+// PUT: body { id: string, prompt: string }
+export async function PUT(req: Request) {
+  try {
+    const { id, prompt } = await req.json();
+    
+    if (!id || typeof prompt !== "string") {
+      return NextResponse.json({ error: "Missing or invalid id or prompt" }, { status: 400 });
+    }
+    
+    const trimmedPrompt = prompt.trim();
+    
+    // Cap at 12,000 chars
+    if (trimmedPrompt.length > 12_000) {
+      return NextResponse.json({ error: "Prompt exceeds 12,000 character limit" }, { status: 413 });
+    }
+    
+    const enc = db.get(id);
+    if (!enc) {
+      return NextResponse.json({ error: "Encounter not found" }, { status: 404 });
+    }
+    
+    enc.reviewPrompt = trimmedPrompt;
+    enc.reviewPromptEditedAt = new Date();
+    
+    return NextResponse.json({ 
+      id, 
+      prompt: trimmedPrompt,
+      editedAt: enc.reviewPromptEditedAt 
+    });
+    
+  } catch (error) {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+}
+
+// DELETE: body { id: string }
+export async function DELETE(req: Request) {
+  try {
+    const { id } = await req.json();
+    
+    if (!id) {
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    }
+    
+    const enc = db.get(id);
+    if (!enc) {
+      return NextResponse.json({ error: "Encounter not found" }, { status: 404 });
+    }
+    
+    delete enc.reviewPrompt;
+    delete enc.reviewPromptEditedAt;
+    
+    return NextResponse.json({ 
+      id,
+      prompt: null 
+    });
+    
+  } catch (error) {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
 }
 </file>
 
@@ -255,6 +497,65 @@ import OpenAI from "openai";
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+</file>
+
+<file path="src/lib/reviewPrompt.ts">
+export const defaultReviewPrompt = `
+
+You are an attending physician using the **PDQI-9** rubric with emphasis on **clinical appropriateness**.
+
+Notes:
+• NOTE_A = baseline AI-generated SOAP (reference)  
+• NOTE_B = student-edited version
+
+**CRITICAL: Use the CONTEXT transcript to judge clinical appropriateness. Inappropriate treatments/medications for the actual clinical scenario should receive LOW scores (1-2).**
+
+Step 1 – Score BOTH notes (Likert 1-5 scale)
+  • **Scoring Guidelines:**
+    - **5**: Excellent, clinically appropriate, evidence-based
+    - **4**: Good, mostly appropriate with minor issues
+    - **3**: Adequate, some concerns but not harmful
+    - **2**: Poor, inappropriate for clinical scenario or potentially harmful
+    - **1**: Dangerous, contraindicated, or completely inappropriate
+
+  • **Key Dimensions with Clinical Focus:**
+    - **accurate**: Factually correct AND clinically appropriate for the case
+    - **useful**: Helpful for patient care AND safe/appropriate treatments
+    - **thorough**: Complete relevant info WITHOUT inappropriate additions
+    - **up_to_date**: Current guidelines AND appropriate for this patient
+    - **organized/comprehensible/succinct/synthesized/consistent**: Standard PDQI-9
+
+  • **PENALIZE HEAVILY**: 
+    - Wrong medications for the condition (e.g., antibiotics for MI)
+    - Inappropriate treatments that don't match the clinical scenario
+    - Dangerous or contraindicated interventions
+
+Step 2 – Delta  
+  • delta = score_B − score_A (range −4→+4).  
+  • overall_delta = sum of deltas (range −36→+36).
+
+Step 3 – Edit analysis  
+  • **REQUIRED**: Create a "changes" entry for EVERY dimension with a non-zero delta.  
+  • If delta ≠ 0, you MUST explain why that dimension score changed.  
+  • For each non-zero delta:  
+      – \`dimension\` name (exact PDQI-9 dimension that changed)  
+      – \`impact\` improved | worsened | neutral  
+      – \`snippet\` ≤20 words (specific text that caused the change)  
+      – \`comment\` coaching ≤25 words explaining WHY the score changed
+
+Return STRICT JSON only:
+
+{
+  "baseline_scores":    { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "student_scores":     { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "delta_scores":       { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
+  "overall_delta": int,
+  "changes": [
+     { "dimension":str, "impact":str, "snippet":str, "comment":str }
+  ],
+
+  "global_comment": str
+}`;
 </file>
 
 <file path="src/types/index.ts">
@@ -466,36 +767,6 @@ Use “—” if nothing remains.
 `;
 </file>
 
-<file path="src/lib/store.ts">
-import { v4 as uuid } from "uuid";
-import { Review } from "@/types";
-
-export interface Encounter {
-  id: string;
-  csv: string;
-  aiNote?: string;
-  studentNote?: string;
-  reviewJson?: Review;
-  createdAt: Date;
-}
-
-// Use a single Map instance attached to globalThis
-declare global {
-  var __encounterStore: Map<string, Encounter> | undefined;
-}
-
-const globalStore = globalThis.__encounterStore;
-
-export const db: Map<string, Encounter> =
-  globalStore ?? (globalThis.__encounterStore = new Map());
-
-export function newEncounter(csv: string): Encounter {
-  const e: Encounter = { id: uuid(), csv, createdAt: new Date() };
-  db.set(e.id, e);
-  return e;
-}
-</file>
-
 <file path="src/lib/utils.ts">
 import { twMerge } from "tailwind-merge";
 import { type ClassValue, clsx } from "clsx";
@@ -548,6 +819,120 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from "next";
+import { Manrope } from "next/font/google";
+import { Toaster } from "sonner";
+import { Github } from "lucide-react";
+import "./globals.css";
+
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "SOAP Note Q3 Project",
+  description: "AI-powered SOAP note generation from patient encounters",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${manrope.variable} antialiased`}
+      >
+        <Toaster richColors />
+        {children}
+        
+        {/* Footer */}
+        <footer className="mt-16 py-8 border-t border-white/20">
+          <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center">
+              <a 
+                href="https://github.com/sidoody/proj-soap" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-white/60 hover:text-yellow-400 transition-colors"
+              >
+                <Github size={20} />
+              </a>
+            </div>
+          </div>
+        </footer>
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="src/components/ui/button.tsx">
+import { forwardRef, ButtonHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "default" | "secondary";
+  loading?: boolean;
+}
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = "default", loading, children, ...props }, ref) => (
+    <button
+      ref={ref}
+      className={cn(
+        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold uppercase transition-colors disabled:opacity-50",
+        variant === "default" &&
+          "bg-yellow-400 text-black hover:bg-yellow-500 focus-visible:ring-yellow-300",
+        variant === "secondary" &&
+          "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600",
+        className
+      )}
+      disabled={loading || props.disabled}
+      {...props}
+    >
+      {loading && <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />}
+      {children}
+    </button>
+  )
+);
+Button.displayName = "Button";
+</file>
+
+<file path="src/lib/store.ts">
+import { v4 as uuid } from "uuid";
+import { Review } from "@/types";
+
+export interface Encounter {
+  id: string;
+  csv: string;
+  aiNote?: string;
+  studentNote?: string;
+  reviewJson?: Review;
+  createdAt: Date;
+  reviewPrompt?: string;
+  reviewPromptEditedAt?: Date;
+}
+
+// Use a single Map instance attached to globalThis
+declare global {
+  var __encounterStore: Map<string, Encounter> | undefined;
+}
+
+const globalStore = globalThis.__encounterStore;
+
+export const db: Map<string, Encounter> =
+  globalStore ?? (globalThis.__encounterStore = new Map());
+
+export function newEncounter(csv: string): Encounter {
+  const e: Encounter = { id: uuid(), csv, createdAt: new Date() };
+  db.set(e.id, e);
+  return e;
+}
 </file>
 
 <file path="src/app/documentation/page.tsx">
@@ -879,6 +1264,31 @@ export async function POST(req: Request) {
                      </div>
                    </details>
                  </div>
+                 
+                 {/* Custom grading prompt subsection */}
+                 <div className="ml-11 mt-6">
+                   <h4 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Custom Grading Prompts</h4>
+                   <div className="space-y-3">
+                     <div className="flex items-start space-x-3">
+                       <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
+                       <div>
+                         <p className="text-gray-700 dark:text-gray-300">You can open <strong>Edit grading prompt</strong> on the note page to customize how your SOAP notes are evaluated.</p>
+                       </div>
+                     </div>
+                     <div className="flex items-start space-x-3">
+                       <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
+                       <div>
+                         <p className="text-gray-700 dark:text-gray-300">Custom prompts are saved per encounter and persist during your session. Use <strong>Reset to default</strong> to return to the standard PDQI-9 rubric.</p>
+                       </div>
+                     </div>
+                     <div className="flex items-start space-x-3">
+                       <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
+                       <div>
+                         <p className="text-gray-700 dark:text-gray-300">The default rubric focuses on <strong>PDQI-9 clinical appropriateness</strong>, emphasizing safe and evidence-based care that matches the patient encounter.</p>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
                </div>
 
                <div>
@@ -915,88 +1325,6 @@ export async function POST(req: Request) {
     </>
   );
 }
-</file>
-
-<file path="src/app/layout.tsx">
-import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
-import { Toaster } from "sonner";
-import { Github } from "lucide-react";
-import "./globals.css";
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "SOAP Note Q3 Project",
-  description: "AI-powered SOAP note generation from patient encounters",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${manrope.variable} antialiased`}
-      >
-        <Toaster richColors />
-        {children}
-        
-        {/* Footer */}
-        <footer className="mt-16 py-8 border-t border-white/20">
-          <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-center">
-              <a 
-                href="https://github.com/sidoody/proj-soap" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-white/60 hover:text-yellow-400 transition-colors"
-              >
-                <Github size={20} />
-              </a>
-            </div>
-          </div>
-        </footer>
-      </body>
-    </html>
-  );
-}
-</file>
-
-<file path="src/components/ui/button.tsx">
-import { forwardRef, ButtonHTMLAttributes } from "react";
-import { cn } from "@/lib/utils";
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "default" | "secondary";
-  loading?: boolean;
-}
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", loading, children, ...props }, ref) => (
-    <button
-      ref={ref}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold uppercase transition-colors disabled:opacity-50",
-        variant === "default" &&
-          "bg-yellow-400 text-black hover:bg-yellow-500 focus-visible:ring-yellow-300",
-        variant === "secondary" &&
-          "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600",
-        className
-      )}
-      disabled={loading || props.disabled}
-      {...props}
-    >
-      {loading && <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />}
-      {children}
-    </button>
-  )
-);
-Button.displayName = "Button";
 </file>
 
 <file path="src/app/globals.css">
@@ -1166,71 +1494,30 @@ import { NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 import { db } from "@/lib/store";
 import { clipText } from "@/lib/clipText";
-
-const reviewPrompt = `
-
-You are an attending physician using the **PDQI-9** rubric with emphasis on **clinical appropriateness**.
-
-Notes:
-• NOTE_A = baseline AI-generated SOAP (reference)  
-• NOTE_B = student-edited version
-
-**CRITICAL: Use the CONTEXT transcript to judge clinical appropriateness. Inappropriate treatments/medications for the actual clinical scenario should receive LOW scores (1-2).**
-
-Step 1 – Score BOTH notes (Likert 1-5 scale)
-  • **Scoring Guidelines:**
-    - **5**: Excellent, clinically appropriate, evidence-based
-    - **4**: Good, mostly appropriate with minor issues
-    - **3**: Adequate, some concerns but not harmful
-    - **2**: Poor, inappropriate for clinical scenario or potentially harmful
-    - **1**: Dangerous, contraindicated, or completely inappropriate
-
-  • **Key Dimensions with Clinical Focus:**
-    - **accurate**: Factually correct AND clinically appropriate for the case
-    - **useful**: Helpful for patient care AND safe/appropriate treatments
-    - **thorough**: Complete relevant info WITHOUT inappropriate additions
-    - **up_to_date**: Current guidelines AND appropriate for this patient
-    - **organized/comprehensible/succinct/synthesized/consistent**: Standard PDQI-9
-
-  • **PENALIZE HEAVILY**: 
-    - Wrong medications for the condition (e.g., antibiotics for MI)
-    - Inappropriate treatments that don't match the clinical scenario
-    - Dangerous or contraindicated interventions
-
-Step 2 – Delta  
-  • delta = score_B − score_A (range −4→+4).  
-  • overall_delta = sum of deltas (range −36→+36).
-
-Step 3 – Edit analysis  
-  • **REQUIRED**: Create a "changes" entry for EVERY dimension with a non-zero delta.  
-  • If delta ≠ 0, you MUST explain why that dimension score changed.  
-  • For each non-zero delta:  
-      – \`dimension\` name (exact PDQI-9 dimension that changed)  
-      – \`impact\` improved | worsened | neutral  
-      – \`snippet\` ≤20 words (specific text that caused the change)  
-      – \`comment\` coaching ≤25 words explaining WHY the score changed
-
-Return STRICT JSON only:
-
-{
-  "baseline_scores":    { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
-  "student_scores":     { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
-  "delta_scores":       { "up_to_date":int, "accurate":int, "thorough":int, "useful":int, "organized":int, "comprehensible":int, "succinct":int, "synthesized":int, "consistent":int },
-  "overall_delta": int,
-  "changes": [
-     { "dimension":str, "impact":str, "snippet":str, "comment":str }
-  ],
-
-  "global_comment": str
-}`;
+import { defaultReviewPrompt } from "@/lib/reviewPrompt";
 
 export async function POST(req: Request) {
-  const { id, studentNote } = await req.json();
+  const { id, studentNote, gradingPrompt } = await req.json();
   const enc = db.get(id);
   if (!enc?.aiNote) {
     return NextResponse.json({ error: "Encounter not found" }, { status: 404 });
   }
   enc.studentNote = studentNote;
+
+  // Resolve prompt in order: inline → saved → default
+  let promptToUse = defaultReviewPrompt;
+  
+  if (gradingPrompt) {
+    // Inline override - apply same validation
+    const trimmedInlinePrompt = gradingPrompt.trim();
+    if (trimmedInlinePrompt.length > 12_000) {
+      return NextResponse.json({ error: "Grading prompt exceeds 12,000 character limit" }, { status: 413 });
+    }
+    promptToUse = trimmedInlinePrompt;
+  } else if (enc.reviewPrompt) {
+    // Use saved prompt for this encounter
+    promptToUse = enc.reviewPrompt;
+  }
 
   const transcript = clipText(enc.csv);
   console.log("Transcript chars:", transcript.length);
@@ -1238,7 +1525,7 @@ export async function POST(req: Request) {
   const messages = [
     {
       role: "system" as const,
-      content: reviewPrompt,
+      content: promptToUse,
     },
     {
       role: "user" as const,
@@ -1690,18 +1977,73 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
   const [student, setStudent] = useState("");
   const [review, setReview] = useState<Review | null>(null);
   const [saving, setSaving] = useState(false);
+  
+  // Grading prompt state
+  const [gradingPrompt, setGradingPrompt] = useState("");
+  const [gradingPromptOpen, setGradingPromptOpen] = useState(false);
+  const [savingPrompt, setSavingPrompt] = useState(false);
+  const [defaultPrompt, setDefaultPrompt] = useState("");
 
   // fetch encounter once
   useEffect(() => {
-    fetch(`/api/debug?id=${id}`)
-      .then((r) => r.ok ? r.json() : Promise.reject("Not found"))
-      .then((d) => {
-        setAiNote(d.aiNote);
-        setStudent(d.studentNote ?? d.aiNote);
-        setReview(d.reviewJson ?? null);
+    Promise.all([
+      fetch(`/api/debug?id=${id}`).then((r) => r.ok ? r.json() : Promise.reject("Not found")),
+      fetch(`/api/review-prompt?id=${id}`).then((r) => r.ok ? r.json() : Promise.reject("Prompt not found"))
+    ])
+      .then(([encounterData, promptData]) => {
+        setAiNote(encounterData.aiNote);
+        setStudent(encounterData.studentNote ?? encounterData.aiNote);
+        setReview(encounterData.reviewJson ?? null);
+        
+        setDefaultPrompt(promptData.defaultPrompt);
+        setGradingPrompt(promptData.prompt ?? promptData.defaultPrompt);
       })
       .catch(() => toast.error("Encounter not found"));
   }, [id]);
+
+  async function handleSavePrompt() {
+    try {
+      setSavingPrompt(true);
+      const r = await fetch("/api/review-prompt", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, prompt: gradingPrompt }),
+      });
+      if (!r.ok) {
+        const error = await r.json();
+        throw new Error(error.error || "Save failed");
+      }
+      toast.success("Grading prompt saved");
+      setGradingPromptOpen(false);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSavingPrompt(false);
+    }
+  }
+
+  async function handleResetPrompt() {
+    if (!confirm("This will discard your custom grading prompt for this note.")) {
+      return;
+    }
+    
+    try {
+      setSavingPrompt(true);
+      const r = await fetch("/api/review-prompt", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (!r.ok) throw new Error("Reset failed");
+      
+      setGradingPrompt(defaultPrompt);
+      toast.success("Reset to default grading prompt");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSavingPrompt(false);
+    }
+  }
 
   async function handleSubmit() {
     try {
@@ -1759,9 +2101,81 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
               value={student}
               onChange={(e) => setStudent(e.target.value)}
             />
-            <Button loading={saving} className="mt-4" onClick={handleSubmit}>
-              Submit for Review
-            </Button>
+            <div className="mt-4 flex gap-2">
+              <Button loading={saving} onClick={handleSubmit}>
+                Submit for Review
+              </Button>
+              <Button 
+                variant="secondary" 
+                onClick={() => setGradingPromptOpen(true)}
+              >
+                Edit grading prompt
+              </Button>
+            </div>
+
+            {/* Grading Prompt Editor */}
+            {gradingPromptOpen && (
+              <div className="mt-6 border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                <h3 className="font-semibold text-lg mb-3 text-gray-900 dark:text-gray-100">
+                  Edit Grading Prompt
+                </h3>
+                <div className="space-y-3">
+                  <Textarea
+                    rows={18}
+                    value={gradingPrompt}
+                    onChange={(e) => setGradingPrompt(e.target.value)}
+                    className="font-mono text-sm"
+                  />
+                  
+                  {/* Helper text and character count */}
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      This prompt guides grading only. It does not change your SOAP text.
+                    </p>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Characters: {gradingPrompt.length} / 12,000
+                        {gradingPrompt.length > 0 && (
+                          <span className="ml-2">
+                            (≈{Math.ceil(gradingPrompt.length / 4)} tokens)
+                          </span>
+                        )}
+                      </span>
+                      {gradingPrompt.length > 12000 && (
+                        <span className="text-red-600 dark:text-red-400 font-medium">
+                          Exceeds limit!
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Action buttons */}
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      loading={savingPrompt}
+                      onClick={handleSavePrompt}
+                      disabled={gradingPrompt.length > 12000}
+                    >
+                      Save
+                    </Button>
+                    <Button 
+                      variant="secondary"
+                      onClick={handleResetPrompt}
+                      disabled={savingPrompt}
+                    >
+                      Reset to default
+                    </Button>
+                    <Button 
+                      variant="secondary"
+                      onClick={() => setGradingPromptOpen(false)}
+                      disabled={savingPrompt}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {review && <ReviewDisplay review={review} />}
           </Card>

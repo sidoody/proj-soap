@@ -1,0 +1,55 @@
+{
+  "schema_version": "soap_rubric_v1",
+  "baseline_scores": {
+    "subjective": 3,
+    "objective": 2,
+    "assessment": 3,
+    "plan": 3
+  },
+  "student_scores": {
+    "subjective": 4,
+    "objective": 3,
+    "assessment": 4,
+    "plan": 5
+  },
+  "delta_scores": {
+    "subjective": 1,
+    "objective": 1,
+    "assessment": 1,
+    "plan": 2
+  },
+  "overall_delta": 5,
+  "changes": [
+    {
+      "section": "subjective",
+      "impact": "improved",
+      "snippet": "Added detailed pain quality description",
+      "comment": "Better characterization enhances clinical picture"
+    },
+    {
+      "section": "objective",
+      "impact": "improved", 
+      "snippet": "Included palpatory findings",
+      "comment": "OMM findings support differential diagnosis"
+    },
+    {
+      "section": "assessment",
+      "impact": "improved",
+      "snippet": "Ranked differential appropriately",
+      "comment": "Logical prioritization based on findings"
+    },
+    {
+      "section": "plan",
+      "impact": "improved",
+      "snippet": "Added OMT and lifestyle counseling",
+      "comment": "Comprehensive osteopathic approach to treatment"
+    }
+  ],
+  "rationale": {
+    "subjective": "Improved organization and added relevant detail to HPI. ROS includes pertinent negatives.",
+    "objective": "Enhanced with structured exam findings and palpatory assessment consistent with chief complaint.",
+    "assessment": "Clear differential ranking with appropriate consideration of clinical findings.",
+    "plan": "Comprehensive plan integrating conventional and osteopathic treatments with clear disposition."
+  },
+  "global_comment": "Excellent improvement showing stronger clinical reasoning and integration of osteopathic principles. Continue developing systematic approach to complex cases."
+} 
